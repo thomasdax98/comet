@@ -1,3 +1,4 @@
+import { ApolloError } from "@apollo/client";
 import { Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 import * as React from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
@@ -7,6 +8,7 @@ import { SaveButton } from "./common/buttons/save/SaveButton";
 import { DirtyHandler } from "./DirtyHandler";
 import { DirtyHandlerApiContext, IDirtyHandlerApi } from "./DirtyHandlerApiContext";
 import { EditDialogApiContext, IEditDialogApi } from "./EditDialogApiContext";
+import { ErrorMessage } from "./error/ErrorMessage";
 import { SubmitResult } from "./form/SubmitResult";
 import { ISelectionApi } from "./SelectionApi";
 import { useSelectionRoute } from "./SelectionRoute";
@@ -18,6 +20,7 @@ interface ITitle {
 
 interface IProps {
     title?: ITitle | string;
+    error?: ApolloError;
 }
 
 const messages = defineMessages({
@@ -33,6 +36,7 @@ const messages = defineMessages({
 });
 
 export function useEditDialog(): [React.ComponentType<IProps>, { id?: string; mode?: "edit" | "add" }, IEditDialogApi] {
+    const [error, setError] = React.useState<ApolloError>();
     const [Selection, selection, selectionApi] = useSelectionRoute();
 
     const openAddDialog = React.useCallback(
@@ -49,22 +53,31 @@ export function useEditDialog(): [React.ComponentType<IProps>, { id?: string; mo
         [selectionApi],
     );
 
+    const showError = (newError: ApolloError) => {
+        setError(newError);
+    };
+
     const api: IEditDialogApi = React.useMemo(() => {
         return {
             openAddDialog,
             openEditDialog,
+            showError,
         };
     }, [openAddDialog, openEditDialog]);
 
     const EditDialogWithHookProps = React.useMemo(() => {
         return (props: IProps) => {
+            if (props.error !== undefined && props.error !== error) {
+                setError(props.error);
+            }
+
             return (
                 <Selection>
-                    <EditDialogInner {...props} selection={selection} selectionApi={selectionApi} api={api} />
+                    <EditDialogInner {...props} selection={selection} selectionApi={selectionApi} api={api} error={error} />
                 </Selection>
             );
         };
-    }, [Selection, api, selection, selectionApi]);
+    }, [Selection, api, error, selection, selectionApi]);
 
     return [EditDialogWithHookProps, selection, api];
 }
@@ -78,7 +91,9 @@ interface IHookProps {
     api: IEditDialogApi;
 }
 
-const EditDialogInner: React.FunctionComponent<IProps & IHookProps> = ({ selection, selectionApi, api, title: maybeTitle, children }) => {
+const EditDialogInner: React.FunctionComponent<IProps & IHookProps> = ({ selection, selectionApi, api, title: maybeTitle, error, children }) => {
+    console.log("EditDialogInner", error);
+
     const intl = useIntl();
 
     const title = maybeTitle ?? {
@@ -111,7 +126,10 @@ const EditDialogInner: React.FunctionComponent<IProps & IHookProps> = ({ selecti
                 <Dialog open={!!selection.mode} onClose={handleCancelClick}>
                     <div>
                         <DialogTitle>{typeof title === "string" ? title : selection.mode === "edit" ? title.edit : title.add}</DialogTitle>
-                        <DialogContent>{children}</DialogContent>
+                        <DialogContent>
+                            {children}
+                            <ErrorMessage error={error} />
+                        </DialogContent>
                         <DialogActions>
                             <CancelButton onClick={handleCancelClick} />
                             <DirtyHandlerApiContext.Consumer>
