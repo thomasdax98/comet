@@ -1,18 +1,18 @@
 import { ClearInputButton } from "@comet/admin";
-import { ClickAwayListener, InputBase, InputBaseProps, Paper, Popper, WithStyles, withStyles } from "@material-ui/core";
+import { ClickAwayListener, InputAdornment, InputBase, InputBaseProps, Paper, Popper, WithStyles, withStyles } from "@material-ui/core";
 import * as React from "react";
 import { CustomPicker } from "react-color";
 import { FieldRenderProps } from "react-final-form";
 import tinycolor from "tinycolor2";
 
 import { colorToHex } from "../utils/colorSpaces";
-import styles from "./ColorPicker.styles";
+import { ColorPickerClassKey, styles } from "./ColorPicker.styles";
 import { HexInput } from "./HexInput";
 import Palette from "./Palette";
 import PickedColor from "./PickedColor";
 import Picker from "./Picker";
 
-export interface ColorPickerThemeProps {
+export interface ColorPickerProps extends FieldRenderProps<string, HTMLInputElement> {
     colorPalette?: string[];
     showPicker?: boolean;
     showClearButton?: boolean;
@@ -21,9 +21,7 @@ export interface ColorPickerThemeProps {
     endAdornment?: InputBaseProps["endAdornment"];
 }
 
-export type ColorPickerProps = WithStyles<typeof styles> & ColorPickerThemeProps & FieldRenderProps<string, HTMLInputElement>;
-
-const ColorPicker: React.FC<ColorPickerProps> = ({
+function ColorPicker({
     colorPalette,
     showPicker,
     fullWidth,
@@ -32,7 +30,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     endAdornment,
     classes,
     input: { value, onChange },
-}) => {
+}: ColorPickerProps & WithStyles<typeof styles>): React.ReactElement {
     const [anchorEl, setAnchorEl] = React.useState<HTMLInputElement | null>(null);
     const inputRef = React.useRef<HTMLInputElement>();
 
@@ -60,12 +58,22 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         <ClickAwayListener onClickAway={handleAwayClick}>
             <div className={rootClasses.join(" ")}>
                 <InputBase
-                    startAdornment={startAdornment ? startAdornment : <PickedColor value={value} classes={classes} />}
+                    startAdornment={
+                        startAdornment ? (
+                            startAdornment
+                        ) : (
+                            <InputAdornment position="start">
+                                <PickedColor value={value} classes={classes} />
+                            </InputAdornment>
+                        )
+                    }
                     endAdornment={
                         endAdornment ? (
                             endAdornment
                         ) : showClearButton ? (
-                            <ClearInputButton onClick={() => onChange("")} disabled={!value} />
+                            <InputAdornment position="end">
+                                <ClearInputButton onClick={() => onChange("")} disabled={!value} />
+                            </InputAdornment>
                         ) : undefined
                     }
                     ref={inputRef}
@@ -93,6 +101,18 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             </div>
         </ClickAwayListener>
     );
-};
+}
 
-export default withStyles(styles, { name: "CometAdminColorPicker", withTheme: true })(CustomPicker(ColorPicker));
+export default withStyles(styles, { name: "CometAdminColorPicker" })(CustomPicker(ColorPicker));
+
+declare module "@material-ui/core/styles/overrides" {
+    interface ComponentNameToClassKey {
+        CometAdminColorPicker: ColorPickerClassKey;
+    }
+}
+
+declare module "@material-ui/core/styles/props" {
+    interface ComponentsPropsList {
+        CometAdminColorPicker: ColorPickerProps;
+    }
+}

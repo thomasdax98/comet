@@ -1,19 +1,13 @@
-import { Theme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/styles";
+import { createStyles } from "@material-ui/styles";
 
-export type CometAdminTabsClassKeys = "root" | "tabs" | "content";
+import { TabsProps } from "./Tabs";
 
-export const useStyles = makeStyles<Theme, {}, CometAdminTabsClassKeys>(
-    () => ({
+export type TabsClassKey = "root" | "tabs" | "content";
+
+export const styles = () => {
+    return createStyles<TabsClassKey, TabsProps>({
         root: {},
         tabs: {},
         content: {},
-    }),
-    { name: "CometAdminTabs" },
-);
-
-declare module "@material-ui/core/styles/overrides" {
-    interface ComponentNameToClassKey {
-        CometAdminTabs: CometAdminTabsClassKeys;
-    }
-}
+    });
+};

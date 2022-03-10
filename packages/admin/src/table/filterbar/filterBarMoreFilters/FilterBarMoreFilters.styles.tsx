@@ -1,21 +1,15 @@
 import { Theme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/styles";
+import { createStyles } from "@material-ui/styles";
 
-export type CometAdminFilterBarPopoverFilterClassKeys =
-    | "root"
-    | "fieldBarWrapper"
-    | "fieldBarInnerWrapper"
-    | "labelWrapper"
-    | "popoverContentContainer"
-    | "popoverInnerContentContainer"
-    | "paper"
-    | "buttonsContainer";
+import { FilterBarMoreFiltersProps } from "./FilterBarMoreFilters";
 
-export const useStyles = makeStyles(
-    (theme: Theme) => ({
-        showMoreWrapper: {
-            backgroundColor: `${theme.palette.common.white}`,
-            border: `1px solid ${theme.palette.grey[300]}`,
+export type FilterBarMoveFilersClassKey = "root" | "textWrapper";
+
+export const styles = ({ palette, typography }: Theme) => {
+    return createStyles<FilterBarMoveFilersClassKey, FilterBarMoreFiltersProps>({
+        root: {
+            backgroundColor: palette.common.white,
+            border: `1px solid ${palette.grey[300]}`,
             justifyContent: "center",
             padding: "10px 15px",
             position: "relative",
@@ -30,13 +24,12 @@ export const useStyles = makeStyles(
                 fontSize: 12,
             },
         },
-        showMoreTextWrapper: {
+        textWrapper: {
             marginLeft: "15px",
 
             "& [class*='MuiTypography-body1']": {
-                fontWeight: theme.typography.fontWeightBold,
+                fontWeight: typography.fontWeightBold,
             },
         },
-    }),
-    { name: "CometAdminFilterBar" },
-);
+    });
+};

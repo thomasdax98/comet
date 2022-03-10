@@ -2,28 +2,29 @@ import { FormControl, FormHelperText, FormLabel, Theme, WithStyles } from "@mate
 import { createStyles, withStyles } from "@material-ui/styles";
 import * as React from "react";
 
-export interface FieldContainerThemeProps {
+export interface FieldContainerProps {
     variant?: "vertical" | "horizontal";
     fullWidth?: boolean;
     requiredSymbol?: React.ReactNode;
-}
-
-interface FieldContainerProps {
     label?: React.ReactNode;
     required?: boolean;
     disabled?: boolean;
     error?: string;
     warning?: string;
     scrollTo?: boolean;
+    fieldMargin?: "always" | "never" | "onlyIfNotLast";
 }
 
-export type CometAdminFormFieldContainerClassKeys =
+export type FieldContainerClassKey =
     | "root"
     | "vertical"
     | "horizontal"
     | "fullWidth"
     | "required"
     | "disabled"
+    | "fieldMarginAlways"
+    | "fieldMarginNever"
+    | "fieldMarginOnlyIfNotLast"
     | "label"
     | "inputContainer"
     | "hasError"
@@ -32,9 +33,9 @@ export type CometAdminFormFieldContainerClassKeys =
     | "warning";
 
 const styles = (theme: Theme) => {
-    return createStyles<CometAdminFormFieldContainerClassKeys, any>({
+    return createStyles<FieldContainerClassKey, FieldContainerProps>({
         root: {
-            "&:not(:last-child)": {
+            "&:not($fieldMarginNever)": {
                 marginBottom: theme.spacing(4),
                 "&:not($fullWidth)": {
                     marginRight: theme.spacing(4),
@@ -59,17 +60,25 @@ const styles = (theme: Theme) => {
                 flexGrow: 1,
             },
         },
-        fullWidth: {
-            "& $inputContainer": {
-                minWidth: 0,
+        fullWidth: {},
+        required: {},
+        disabled: {
+            "& $label": {
+                color: theme.palette.text.disabled,
             },
         },
-        required: {},
-        disabled: {},
-        label: {},
-        inputContainer: {
-            minWidth: 120,
+        fieldMarginAlways: {},
+        fieldMarginNever: {},
+        fieldMarginOnlyIfNotLast: {
+            "&:last-child": {
+                marginBottom: 0,
+                "&:not($fullWidth)": {
+                    marginRight: 0,
+                },
+            },
         },
+        label: {},
+        inputContainer: {},
         hasError: {
             "& $label:not([class*='Mui-focused'])": {
                 color: theme.palette.error.main,
@@ -96,7 +105,7 @@ const styles = (theme: Theme) => {
     });
 };
 
-export const FieldContainerComponent: React.FC<WithStyles<typeof styles, true> & FieldContainerProps & FieldContainerThemeProps> = ({
+export const FieldContainerComponent: React.FC<WithStyles<typeof styles> & FieldContainerProps> = ({
     classes,
     variant = "vertical",
     fullWidth,
@@ -108,6 +117,7 @@ export const FieldContainerComponent: React.FC<WithStyles<typeof styles, true> &
     children,
     warning,
     scrollTo = false,
+    fieldMargin = "onlyIfNotLast",
 }) => {
     const hasError = !!error;
     const hasWarning = !!warning;
@@ -120,6 +130,9 @@ export const FieldContainerComponent: React.FC<WithStyles<typeof styles, true> &
     if (hasWarning && !hasError) formControlClasses.push(classes.hasWarning);
     if (disabled) formControlClasses.push(classes.disabled);
     if (required) formControlClasses.push(classes.required);
+    if (fieldMargin === "always") formControlClasses.push(classes.fieldMarginAlways);
+    if (fieldMargin === "never") formControlClasses.push(classes.fieldMarginNever);
+    if (fieldMargin === "onlyIfNotLast") formControlClasses.push(classes.fieldMarginOnlyIfNotLast);
 
     const ref = React.useRef<HTMLDivElement>(null);
 
@@ -152,4 +165,16 @@ export const FieldContainerComponent: React.FC<WithStyles<typeof styles, true> &
     );
 };
 
-export const FieldContainer = withStyles(styles, { name: "CometAdminFormFieldContainer", withTheme: true })(FieldContainerComponent);
+export const FieldContainer = withStyles(styles, { name: "CometAdminFormFieldContainer" })(FieldContainerComponent);
+
+declare module "@material-ui/core/styles/overrides" {
+    interface ComponentNameToClassKey {
+        CometAdminFormFieldContainer: FieldContainerClassKey;
+    }
+}
+
+declare module "@material-ui/core/styles/props" {
+    interface ComponentsPropsList {
+        CometAdminFormFieldContainer: FieldContainerProps;
+    }
+}

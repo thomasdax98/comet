@@ -7,10 +7,10 @@ import { matchPath, useLocation } from "react-router";
 import { MenuItem, MenuItemProps } from "./Item";
 import { MenuItemRouterLinkProps } from "./ItemRouterLink";
 
-export type CometAdminMenuCollapsibleItemClassKeys = "root" | "childSelected" | "listItem" | "open";
+export type MenuCollapsibleItemClassKey = "root" | "childSelected" | "listItem" | "open";
 
 const styles = (theme: Theme) =>
-    createStyles<CometAdminMenuCollapsibleItemClassKeys, any>({
+    createStyles<MenuCollapsibleItemClassKey, MenuCollapsibleItemProps>({
         root: {},
         childSelected: {
             color: theme.palette.primary.main,
@@ -33,19 +33,15 @@ export interface MenuLevel {
 
 type MenuChild = React.ReactElement<MenuItemRouterLinkProps>;
 
-interface MenuCollapsibleItemProps extends MenuItemProps {
-    children: MenuChild[];
-}
-
-export interface MenuCollapsibleItemThemeProps {
+export interface MenuCollapsibleItemProps extends MenuItemProps {
+    children: MenuChild | MenuChild[];
     openByDefault?: boolean;
     openedIcon?: React.ReactNode;
     closedIcon?: React.ReactNode;
 }
 
-const CollapsibleItem: React.FC<WithStyles<typeof styles> & MenuCollapsibleItemThemeProps & MenuCollapsibleItemProps> = ({
+const CollapsibleItem: React.FC<WithStyles<typeof styles> & MenuCollapsibleItemProps> = ({
     classes,
-    theme,
     level,
     primary,
     secondary,
@@ -56,7 +52,7 @@ const CollapsibleItem: React.FC<WithStyles<typeof styles> & MenuCollapsibleItemT
     children,
     ...otherProps
 }) => {
-    if (!level) level = 1;
+    const itemLevel: 1 | 2 = level ? level : 1;
     let hasSelectedChild: boolean = false;
     const location = useLocation();
 
@@ -65,8 +61,10 @@ const CollapsibleItem: React.FC<WithStyles<typeof styles> & MenuCollapsibleItemT
             hasSelectedChild = true;
         }
 
+        const newItemLevel = itemLevel + 1;
+
         return React.cloneElement<MenuLevel>(child, {
-            level: level + 1,
+            level: newItemLevel === 1 || newItemLevel === 2 ? newItemLevel : undefined,
         });
     });
 
@@ -95,4 +93,16 @@ const CollapsibleItem: React.FC<WithStyles<typeof styles> & MenuCollapsibleItemT
     );
 };
 
-export const MenuCollapsibleItem = withStyles(styles, { name: "CometAdminMenuCollapsibleItem", withTheme: true })(CollapsibleItem);
+export const MenuCollapsibleItem = withStyles(styles, { name: "CometAdminMenuCollapsibleItem" })(CollapsibleItem);
+
+declare module "@material-ui/core/styles/overrides" {
+    interface ComponentNameToClassKey {
+        CometAdminMenuCollapsibleItem: MenuCollapsibleItemClassKey;
+    }
+}
+
+declare module "@material-ui/core/styles/props" {
+    interface ComponentsPropsList {
+        CometAdminMenuCollapsibleItem: MenuCollapsibleItemProps;
+    }
+}

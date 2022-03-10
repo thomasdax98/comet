@@ -1,17 +1,12 @@
 import { Theme } from "@material-ui/core/styles";
-import { TypographyTypeMap } from "@material-ui/core/Typography/Typography";
-import { makeStyles } from "@material-ui/styles";
+import { createStyles } from "@material-ui/styles";
 
-import { useComponentThemeProps } from "../../../mui/useComponentThemeProps";
+import { ToolbarBreadcrumbsProps } from "./ToolbarBreadcrumbs";
 
-export interface ToolbarBreadcrumbsThemeProps {
-    typographyProps: TypographyTypeMap["props"];
-}
+export type ToolbarBreadcrumbsClassKey = "item" | "typographyRoot" | "typographyActiveRoot" | "separatorContainer" | "separator";
 
-export type CometAdminToolbarBreadcrumbsClassKeys = "item" | "typographyRoot" | "typographyActiveRoot" | "separatorContainer" | "separator";
-
-export const useStyles = makeStyles<Theme, {}, CometAdminToolbarBreadcrumbsClassKeys>(
-    (theme) => ({
+export const styles = ({ palette }: Theme) => {
+    return createStyles<ToolbarBreadcrumbsClassKey, ToolbarBreadcrumbsProps>({
         item: {
             display: "flex",
             alignItems: "center",
@@ -21,7 +16,7 @@ export const useStyles = makeStyles<Theme, {}, CometAdminToolbarBreadcrumbsClass
             fontSize: 18,
         },
         typographyActiveRoot: {
-            color: theme.palette.primary.main,
+            color: palette.primary.main,
         },
         separatorContainer: {
             height: "100%",
@@ -34,27 +29,8 @@ export const useStyles = makeStyles<Theme, {}, CometAdminToolbarBreadcrumbsClass
         separator: {
             height: 30,
             width: 1,
-            backgroundColor: theme.palette.divider,
+            backgroundColor: palette.divider,
             transform: "rotate(20deg)",
         },
-    }),
-    { name: "CometAdminToolbarBreadcrumbs" },
-);
-
-export function useThemeProps() {
-    const { typographyProps, ...restProps } = useComponentThemeProps("CometAdminToolbarBreadcrumbs") ?? {};
-    return { typographyProps, ...restProps };
-}
-
-// Theme Augmentation
-declare module "@material-ui/core/styles/overrides" {
-    interface ComponentNameToClassKey {
-        CometAdminToolbarBreadcrumbs: CometAdminToolbarBreadcrumbsClassKeys;
-    }
-}
-
-declare module "@material-ui/core/styles/props" {
-    interface ComponentsPropsList {
-        CometAdminToolbarBreadcrumbs: ToolbarBreadcrumbsThemeProps;
-    }
-}
+    });
+};

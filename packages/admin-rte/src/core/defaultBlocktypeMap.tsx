@@ -4,15 +4,16 @@ import * as React from "react";
 import { defineMessage, FormattedMessage } from "react-intl";
 
 import { BlockElement } from "./BlockElement";
-import { IBlocktypeMap } from "./types";
+import { IBlocktypeConfig, IBlocktypeMap } from "./types";
 
 const headerMessage = defineMessage({ id: "cometAdmin.rte.controls.blockType.heading", defaultMessage: "Heading {level}" });
 
 const defaultBlocktypeMap: IBlocktypeMap = {
-    // "unstyled" is special: only the value for renderConfig is considered,
+    // "unstyled" is special: only the value for renderConfig and label is considered,
     // other values are ignored
     unstyled: {
         //info:  https://draftjs.org/docs/advanced-topics-custom-block-render-map/#configuring-block-render-map
+        label: <FormattedMessage id="cometAdmin.rte.controls.blockType.default" defaultMessage="Default" />,
         renderConfig: {
             element: BlockElement,
             aliasedElements: ["p"],
@@ -106,23 +107,41 @@ const defaultBlocktypeMap: IBlocktypeMap = {
 
 export function mergeBlocktypeMaps(...args: IBlocktypeMap[]) {
     return args.reduce((a, b) => {
-        const remaining = { ...b }; // copy or bad things happen
+        const remainingA = { ...a }; // copy or bad things happen
         const newEl: IBlocktypeMap = {};
-        Object.entries(a).forEach(([key, c]) => {
-            if (remaining[key]) {
+        Object.entries(b).forEach(([key, c]) => {
+            if (remainingA[key]) {
                 // merge 2nd level
-                newEl[key] = { ...c, ...remaining[key] };
-                delete remaining[key];
+                newEl[key] = { ...remainingA[key], ...c };
+                delete remainingA[key];
             } else {
                 newEl[key] = { ...c }; // only one level
             }
         });
         // merge in remaining
-        Object.entries(remaining).forEach(([key, c]) => {
+        Object.entries(remainingA).forEach(([key, c]) => {
             newEl[key] = { ...c };
         });
         return newEl;
     }); // merge 2 levels nested
+}
+
+export function cleanBlockTypeMap(map: IBlocktypeMap) {
+    // these unsupportedKeysForUnstyled canot be changed
+    const unsupportedKeysForUnstyled: Array<keyof IBlocktypeConfig> = ["group", "icon", "supportedBy"];
+
+    if (map?.unstyled) {
+        unsupportedKeysForUnstyled.forEach((c) => {
+            if (map.unstyled[c]) {
+                map.unstyled[c] = undefined;
+                console.warn(
+                    `'unstyled' in BlocktypeMap does not support the key '${c}' with the given value '${map.unstyled[c]}'. The value is ignored.`,
+                );
+            }
+        });
+    }
+
+    return map;
 }
 
 export default defaultBlocktypeMap;

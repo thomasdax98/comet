@@ -1,38 +1,46 @@
 import { Clear } from "@comet/admin-icons";
-import { ButtonBase, ButtonBaseProps, WithStyles } from "@material-ui/core";
+import { ButtonBase, ButtonBaseClassKey, ButtonBaseProps, WithStyles } from "@material-ui/core";
+import { Theme } from "@material-ui/core/styles";
 import { createStyles, withStyles } from "@material-ui/styles";
 import * as React from "react";
 
-export interface ClearInputButtonThemeProps {
-    icon?: (disabled?: boolean) => React.ReactNode;
+export type ClearInputButtonClassKey = ButtonBaseClassKey;
+export interface ClearInputButtonProps extends ButtonBaseProps {
+    icon?: React.ReactNode;
 }
 
-export type CometAdminClearInputButtonClassKeys = "root" | "disabled" | "defaultIcon";
-
-const styles = () => {
-    return createStyles<CometAdminClearInputButtonClassKeys, any>({
+const styles = ({ palette }: Theme) => {
+    return createStyles<ClearInputButtonClassKey, ClearInputButtonProps>({
         root: {
             height: "100%",
-            width: 32,
-            flexShrink: 0,
+            width: 40,
+            color: palette.action.active,
         },
-        disabled: {},
-        defaultIcon: {},
+        disabled: {
+            color: palette.action.disabled,
+        },
+        focusVisible: {},
     });
 };
 
-const ClearButton: React.FC<WithStyles<typeof styles, true> & ClearInputButtonThemeProps & ButtonBaseProps> = ({
-    classes,
-    theme,
-    disabled,
-    icon,
-    ...otherButtonBaseProps
-}) => {
+const ClearInputBtn: React.FC<WithStyles<typeof styles> & ClearInputButtonProps> = ({ icon = <Clear />, ...restProps }) => {
     return (
-        <ButtonBase classes={{ root: classes.root, disabled: classes.disabled }} disabled={disabled} tabIndex={-1} {...otherButtonBaseProps}>
-            {icon ? icon(disabled) : <Clear color={disabled ? "disabled" : "action"} />}
+        <ButtonBase tabIndex={-1} {...restProps}>
+            {icon}
         </ButtonBase>
     );
 };
 
-export const ClearInputButton = withStyles(styles, { name: "CometAdminClearInputButton", withTheme: true })(ClearButton);
+export const ClearInputButton = withStyles(styles, { name: "CometAdminClearInputButton" })(ClearInputBtn);
+
+declare module "@material-ui/core/styles/overrides" {
+    interface ComponentNameToClassKey {
+        CometAdminClearInputButton: ClearInputButtonClassKey;
+    }
+}
+
+declare module "@material-ui/core/styles/props" {
+    interface ComponentsPropsList {
+        CometAdminClearInputButton: ClearInputButtonProps;
+    }
+}

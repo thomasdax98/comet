@@ -1,43 +1,41 @@
 import { Check, ChevronDown, Reset } from "@comet/admin-icons";
-import { Button, Popover, Typography } from "@material-ui/core";
-import { ThemeOptions, useTheme } from "@material-ui/core/styles";
-import clsx from "clsx";
+import { Button, ButtonProps, Popover, WithStyles } from "@material-ui/core";
+import { withStyles } from "@material-ui/styles";
 import * as React from "react";
 import { Form, useForm } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
 import { dirtyFieldsCount } from "../dirtyFieldsCount";
-import { FilterBarActiveFilterBadge, FilterBarActiveFilterBadgeProps } from "../filterBarActiveFilterBadge/FilterBarActiveFilterBadge";
-import { useStyles } from "./FilterBarPopoverFilter.styles";
+import { FilterBarActiveFilterBadgeProps } from "../filterBarActiveFilterBadge/FilterBarActiveFilterBadge";
+import { FilterBarButton, FilterBarButtonProps } from "../filterBarButton/FilterBarButton";
+import { FilterBarPopoverFilterClassKey, styles } from "./FilterBarPopoverFilter.styles";
 
 export interface FilterBarPopoverFilterProps {
     label: string;
     dirtyFieldsBadge?: React.ComponentType<FilterBarActiveFilterBadgeProps>;
     calcNumberDirtyFields?: (values: Record<string, any>, registeredFields: string[]) => number;
+    submitButtonProps?: ButtonProps;
+    resetButtonProps?: ButtonProps;
+    filterBarButtonProps?: FilterBarButtonProps;
 }
 
-export function FilterBarPopoverFilter({
+function PopoverFilter({
     children,
     label,
     dirtyFieldsBadge,
     calcNumberDirtyFields = dirtyFieldsCount,
-}: React.PropsWithChildren<FilterBarPopoverFilterProps>) {
-    const FilterBarActiveFilterBadgeComponent = dirtyFieldsBadge ? dirtyFieldsBadge : FilterBarActiveFilterBadge;
+    submitButtonProps,
+    resetButtonProps,
+    filterBarButtonProps,
+    classes,
+}: React.PropsWithChildren<FilterBarPopoverFilterProps> & WithStyles<typeof styles>) {
     const outerForm = useForm();
-    const [anchorEl, setAnchorEl] = React.useState<HTMLDivElement | null>(null);
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const open = Boolean(anchorEl);
 
-    const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
-
-    const { props: themeProps } = useTheme<ThemeOptions>();
-    const submitButtonProps =
-        themeProps && themeProps["CometAdminFilterBarPopoverFilter"] ? { ...themeProps["CometAdminFilterBarPopoverFilter"]?.submitButton } : {};
-    const resetButtonProps =
-        themeProps && themeProps["CometAdminFilterBarPopoverFilter"] ? { ...themeProps["CometAdminFilterBarPopoverFilter"]?.resetButton } : {};
-
-    const classes = useStyles();
 
     return (
         <div className={classes.root}>
@@ -52,14 +50,17 @@ export function FilterBarPopoverFilter({
                 {({ form, values, handleSubmit, dirtyFields }) => {
                     const countValue = calcNumberDirtyFields(values, form.getRegisteredFields());
                     return (
-                        <div className={clsx(classes.fieldBarWrapper, countValue > 0 && classes.fieldBarWrapperWithValues)}>
-                            <div className={classes.fieldBarInnerWrapper} onClick={handleClick}>
-                                <div className={clsx(classes.labelWrapper, countValue > 0 && classes.labelWrapperWithValues)}>
-                                    <Typography variant="body1">{label}</Typography>
-                                </div>
-                                <FilterBarActiveFilterBadgeComponent countValue={countValue} />
-                                <ChevronDown />
-                            </div>
+                        <div className={classes.fieldBarWrapper}>
+                            <FilterBarButton
+                                openPopover={open}
+                                numberDirtyFields={countValue}
+                                onClick={handleClick}
+                                dirtyFieldsBadge={dirtyFieldsBadge}
+                                endIcon={<ChevronDown />}
+                                {...filterBarButtonProps}
+                            >
+                                {label}
+                            </FilterBarButton>
                             <Popover
                                 open={open}
                                 anchorEl={anchorEl}
@@ -121,4 +122,18 @@ export function FilterBarPopoverFilter({
             </Form>
         </div>
     );
+}
+
+export const FilterBarPopoverFilter = withStyles(styles, { name: "CometAdminFilterBarPopoverFilter" })(PopoverFilter);
+
+declare module "@material-ui/core/styles/overrides" {
+    interface ComponentNameToClassKey {
+        CometAdminFilterBarPopoverFilter: FilterBarPopoverFilterClassKey;
+    }
+}
+
+declare module "@material-ui/core/styles/props" {
+    interface ComponentsPropsList {
+        CometAdminFilterBarPopoverFilter: FilterBarPopoverFilterProps;
+    }
 }

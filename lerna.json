@@ -4,9 +4,13 @@
         "packages/*"
     ],
     "useWorkspaces": true,
-    "version": "2.0.0-alpha.10",
+    "version": "2.0.0",
     "command": {
+        "version": {
+            "message": "chore(release): publish %s"
+        },
         "publish": {
+            "registry": "https://registry.npmjs.org",
             "ignoreChanges": [
                 "CHANGELOG.md"
             ]

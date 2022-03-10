@@ -1,10 +1,12 @@
 import { Theme } from "@material-ui/core";
 import { createStyles } from "@material-ui/styles";
 
-export type CometAdminMenuClassKeys = "drawer" | "permanent" | "temporary" | "open" | "closed";
+import { MenuProps } from "./Menu";
+
+export type MenuClassKey = "drawer" | "permanent" | "temporary" | "open" | "closed";
 
 export const styles = (theme: Theme) =>
-    createStyles<CometAdminMenuClassKeys, any>({
+    createStyles<MenuClassKey, MenuProps>({
         drawer: {
             "& [class*='MuiDrawer-paper']": {
                 backgroundColor: "#fff",

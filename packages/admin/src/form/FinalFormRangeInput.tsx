@@ -1,17 +1,12 @@
-import { FormControl, InputBase, Slider, SliderProps, Theme, WithStyles } from "@material-ui/core";
+import { FormControl, InputBase, Slider, SliderProps, WithStyles } from "@material-ui/core";
 import { createStyles, withStyles } from "@material-ui/styles";
 import * as React from "react";
 import { FieldRenderProps } from "react-final-form";
 
-export type CometAdminFinalFormRangeInputClassKeys =
-    | "root"
-    | "inputsWrapper"
-    | "inputFieldsSeperatorContainer"
-    | "sliderWrapper"
-    | "inputFieldContainer";
+export type FinalFormRangeInputClassKey = "root" | "inputsWrapper" | "inputFieldsSeparatorContainer" | "sliderWrapper" | "inputFieldContainer";
 
-const styles = (theme: Theme) => {
-    return createStyles<CometAdminFinalFormRangeInputClassKeys, any>({
+const styles = () => {
+    return createStyles<FinalFormRangeInputClassKey, FinalFormRangeInputProps>({
         root: {
             boxSizing: "border-box",
             padding: "0 20px",
@@ -23,13 +18,11 @@ const styles = (theme: Theme) => {
             alignItems: "center",
             display: "flex",
         },
-        inputFieldsSeperatorContainer: {
+        inputFieldsSeparatorContainer: {
             textAlign: "center",
             minWidth: "20%",
         },
-        sliderWrapper: {
-            paddingBottom: "20px",
-        },
+        sliderWrapper: {},
         inputFieldContainer: {
             textAlign: "center",
             flexBasis: 0,
@@ -38,7 +31,7 @@ const styles = (theme: Theme) => {
     });
 };
 
-interface IFinalFormRangeInputProps extends FieldRenderProps<{ min: number; max: number }, HTMLInputElement> {
+export interface FinalFormRangeInputProps extends FieldRenderProps<{ min: number; max: number }, HTMLInputElement> {
     min: number;
     max: number;
     startAdornment?: React.ReactNode;
@@ -46,7 +39,7 @@ interface IFinalFormRangeInputProps extends FieldRenderProps<{ min: number; max:
     sliderProps?: Omit<SliderProps, "min" | "max">;
 }
 
-const FinalFormRangeInputComponent: React.FunctionComponent<WithStyles<typeof styles, true> & IFinalFormRangeInputProps> = ({
+const FinalFormRangeInputComponent: React.FunctionComponent<WithStyles<typeof styles> & FinalFormRangeInputProps> = ({
     classes,
     min,
     max,
@@ -102,7 +95,7 @@ const FinalFormRangeInputComponent: React.FunctionComponent<WithStyles<typeof st
                         />
                     </FormControl>
                 </div>
-                <div className={classes.inputFieldsSeperatorContainer}>-</div>
+                <div className={classes.inputFieldsSeparatorContainer}>-</div>
                 <div className={classes.inputFieldContainer}>
                     <FormControl fullWidth>
                         <InputBase
@@ -150,4 +143,10 @@ const FinalFormRangeInputComponent: React.FunctionComponent<WithStyles<typeof st
     );
 };
 
-export const FinalFormRangeInput = withStyles(styles, { name: "CometAdminFinalFormRangeInput", withTheme: true })(FinalFormRangeInputComponent);
+export const FinalFormRangeInput = withStyles(styles, { name: "CometAdminFinalFormRangeInput" })(FinalFormRangeInputComponent);
+
+declare module "@material-ui/core/styles/overrides" {
+    interface ComponentNameToClassKey {
+        CometAdminFinalFormRangeInput: FinalFormRangeInputClassKey;
+    }
+}

@@ -2,7 +2,9 @@ import { Theme } from "@material-ui/core";
 import zIndex from "@material-ui/core/styles/zIndex";
 import { createStyles } from "@material-ui/styles";
 
-export type CometAdminColorPickerClassKeys =
+import { ColorPickerProps } from "./ColorPicker";
+
+export type ColorPickerClassKey =
     | "root"
     | "fullWidth"
     | "input"
@@ -21,8 +23,8 @@ export type CometAdminColorPickerClassKeys =
     | "paletteItem"
     | "readOnlyInput";
 
-const styles = (theme: Theme) => {
-    return createStyles<CometAdminColorPickerClassKeys, any>({
+export const styles = (theme: Theme) => {
+    return createStyles<ColorPickerClassKey, ColorPickerProps>({
         root: {
             width: 160,
         },
@@ -38,13 +40,13 @@ const styles = (theme: Theme) => {
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
+            lineHeight: "20px",
+            padding: 9,
         },
         inputInnerLeftContent: {
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            paddingLeft: theme.spacing(1),
-            paddingRight: theme.spacing(1),
             width: "100%",
         },
         popper: {
@@ -126,5 +128,3 @@ const styles = (theme: Theme) => {
         },
     });
 };
-
-export default styles;

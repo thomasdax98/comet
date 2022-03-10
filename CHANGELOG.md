@@ -2,39 +2,29 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [next]
+# [2.1.0]
+
+## Highlights:
+
+-   Add FinalFormAutocomplete (see Story "Autocomplete / Async Select")
+-   Add useAsyncOptionsProps-Hook to allow async loading of options in FinalFormAutocomplete and FinalFormSelect
+-   Add support to pass options directly via props in FinalFormSelect (they are rendered automatically)
+
+## Changes
+
+-   [RTE] add MacOS specific shortcut tooltips
+
+# [2.0.0]
+
+## Highlights:
+
+-   Added package @comet/admin-icons
+-   Added a standard toolbar that can be used as an application wide element with consistent styling containing navigation, action buttons and filters
+-   Added the ability to customize components, similar to material-ui components (either globally through [theme-overrides](https://v4.mui.com/customization/globals/#css) and [theme-props](https://v4.mui.com/customization/globals/#default-props) or individually with [classes](https://v4.mui.com/customization/components/#overriding-styles-with-class-names))
+-   Started docs of components and general information about development of Comet Admin
+-   Implemented [ErrorBoundaries](https://reactjs.org/docs/error-boundaries.html) that catch errors in the component tree without crashing the application
 
 ## @comet/admin
-
-### Highlights
-
--   Added `ClearInputButton`, this component can be used as `endAdornment`, to clear inputs
-    -   Can be themed with `CometAdminClearInputButton` (props and overrides)
--   New methods of customization and default layout for `Field`
-    -   Added theme-augmentation for `FieldContainer`
-    -   New `variant` prop to select between vertical and horizontal positioning of label and input
-    -   Label is now positioned above input by default (`variant={"vertical"}`)
--   The Menu component and it's items can be customized using the material-ui theme
-    -   Allows custom styling of the Menu, MenuItem and MenuCollapsibleItem _(theme -> overrides -> CometAdminMenu/CometAdminMenuItem/CometAdminMenuCollapsibleItem)_
-    -   Allows using custom open/close icons for CollapsibleItem _(theme -> props -> CometAdminMenuCollapsibleItem -> openedIcon/closedIcon)_
--   The MasterLayout component can be customized using the material-ui theme
-    -   Using the new `headerHeight` prop, the top-spacing of the content and the menu, will now be adjusted automatically
--   add new package @comet/admin-icons
--   add onAfterSubmit to FinalForm
--   add useStoredState() hook
--   Added a new FinalFormRangeInput Component
--   add standard Toolbar that can be used as application wide consistent element containing navigation, action buttons and filters
--   add SplitButton - combine multiple buttons behind one ButtonGroup
--   add SaveButton which handles and displays state(idle, saving, success and error)
--   add SnackbarProvider, useSnackbarApi() hook and UndoSnackbar
--   add `FinalFormSaveCancelButtonsLegacy` as drop in replacement for removed Cancel and Save Button in `FinalForm`.
--   add PrettyBytes component for formatting file sizes and other byte values
--   Add `validateWarning` validator to `Field` and `FinalForm`.
--   Add `open` and `onOpenChange` props to `AppHeaderDropdown` that allow replacing the internal open state with an external state
--   add `getTargetUrl()` to `StackSwitchApi`
--   add `StackLink` component for navigating within a `Stack` via hyperlinks
--   allow `boolean | undefined | null` as children of `RouterTabs`
--   expose `selectionApi` through `useEditDialog`
 
 ### Incompatible Changes
 
@@ -43,7 +33,7 @@ All notable changes to this project will be documented in this file. This projec
 -   Removed FinalFormTextField in favour of FinalFormInput
     -   MuiTextField should not be used inside comet-admin projects, it's design is not compatible with the comet-ci.
 -   Usage and default layout of `Field` has changed
-    -   The `fieldContainer` prop has been removed, in favour of the `variant` prop and theme-augmentation of `CometAdminFormFieldContainer`
+    -   The `fieldContainer` prop has been removed, in favour of a `variant` prop
     -   Removed `FieldContainerLabelAbove` component (the new default looks like this)
     -   The old default layout of `Field` can be restored by adding the following to the theme:
         ```js
@@ -73,7 +63,7 @@ All notable changes to this project will be documented in this file. This projec
         -   This allows for more control, like giving certain pages more width by always using the temporary variant on those pages
     -   Allows maximum item-nesting of two levels
 -   Changes to Stack
-    -   Removed prop `components.breadcrumbsContainer` in favour of a div that can be styled using the theme (`overrides -> CometAdminStack -> breadcrumbs`)
+    -   Removed prop `components.breadcrumbsContainer` in favour of a div that can be customized through the theme and classes
 -   Removed component `FixedLeftRightLayout`
 -   Removed FormPaper, the same effect can be accomplished with a CardContent within a Card.
 -   Changes to MasterLayout
@@ -204,21 +194,40 @@ npx jscodeshift --extensions=ts --parser=ts -t comet-admin/codemods/2.0.0/update
 npx jscodeshift --extensions=tsx --parser=tsx -t comet-admin/codemods/2.0.0/update-theme.ts src/
 ```
 
+### Other Notable Changes
+
+-   Added `ClearInputButton`, this component can be used as `endAdornment`, to clear inputs
+-   New methods of customization and default layout for `Field`
+    -   New `variant` prop to select between vertical and horizontal positioning of label and input
+    -   Label is now positioned above input by default (`variant={"vertical"}`)
+-   Added a new `headerHeight` prop to MasterLayout, that child components (e.g. AppHeader & Menu) can use to position themselves without overlapping
+-   add onAfterSubmit to FinalForm
+-   add useStoredState() hook
+-   Added a new FinalFormRangeInput Component
+-   add SplitButton - combine multiple buttons behind one ButtonGroup
+-   add SaveButton which handles and displays state(idle, saving, success and error)
+-   add SnackbarProvider, useSnackbarApi() hook and UndoSnackbar
+-   add `FinalFormSaveCancelButtonsLegacy` as drop in replacement for removed Cancel and Save Button in `FinalForm`.
+-   add PrettyBytes component for formatting file sizes and other byte values
+-   Add `validateWarning` validator to `Field` and `FinalForm`.
+-   Add `open` and `onOpenChange` props to `AppHeaderDropdown` that allow replacing the internal open state with an external state
+-   add `getTargetUrl()` to `StackSwitchApi`
+-   add `StackLink` component for navigating within a `Stack` via hyperlinks
+-   allow `boolean | undefined | null` as children of `RouterTabs`
+-   expose `selectionApi` through `useEditDialog`
+
 ## @comet/admin-color-picker
-
-### Highlights
-
--   Allow custom icons/adornment for color-input
--   The clear-button is now optional (using the `showClearButton` prop)
 
 ### Incompatible Changes
 
 -   Renamed `VPAdminColorPicker` to `CometAdminColorPicker`
--   Removed `clearButton` and `clearIcon` classes from color-picker
-    -   Using theme-augmentation the new common clear-button can now be styled with `CometAdminClearInputButton` instead of `VPAdminColorPicker`
+-   Removed `clearButton` and `clearIcon` classes from color-picker and use the ClearInputButton component instead
 -   The clear-button is no longer shown by default
--   Removed `clearButton` and `clearIcon` classes from color-picker
-    -   Using theme-augmentation the new common clear-button can now be styled with `CometAdminClearInputButton` instead of `VPAdminColorPicker`
+
+### Other Notable Changes
+
+-   Allow custom icons/adornment for color-input
+-   The clear-button is now optional (using the `showClearButton` prop)
 
 ## @comet/admin-react-select
 
@@ -228,14 +237,12 @@ npx jscodeshift --extensions=tsx --parser=tsx -t comet-admin/codemods/2.0.0/upda
 
 ## @comet/admin-rte
 
-### Highlights
-
--   Add ability to customize the styling using theme-overrides
-
 ### Incompatible Changes
 
 -   Removed `rte` key from theme
     -   The rte-colors should now be defined under `props` -> `CometAdminRte` -> `colors` instead of `rte` -> `colors`
+
+------------------------------------ LEGACY DOCS WITH INDEPENDENT RELEASES ------------------------------------
 
 # @comet/admin
 

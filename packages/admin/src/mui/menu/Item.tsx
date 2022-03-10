@@ -5,7 +5,7 @@ import * as React from "react";
 import { MenuLevel } from "./CollapsibleItem";
 import { MenuContext } from "./Context";
 
-export type CometAdminMenuItemClassKeys = "root" | "level1" | "level2" | "hasIcon" | "hasSecondaryText" | "hasSecondaryAction";
+export type MenuItemClassKey = "root" | "level1" | "level2" | "hasIcon" | "hasSecondaryText" | "hasSecondaryAction";
 
 const colors = {
     textLevel1: "#242424",
@@ -13,7 +13,7 @@ const colors = {
 };
 
 const styles = (theme: Theme) =>
-    createStyles<CometAdminMenuItemClassKeys, any>({
+    createStyles<MenuItemClassKey, MenuItemProps & MuiListItemProps>({
         root: {
             flexShrink: 0,
             "&:after": {
@@ -107,9 +107,8 @@ export interface MenuItemProps extends MenuLevel {
 
 type MuiListItemProps = Pick<ListItemProps, Exclude<keyof ListItemProps, "innerRef" | "button">> & { component?: React.ElementType };
 
-const Item: React.FC<WithStyles<typeof styles, false> & MenuItemProps & MuiListItemProps> = ({
+const Item: React.FC<WithStyles<typeof styles> & MenuItemProps & MuiListItemProps> = ({
     classes,
-    theme,
     primary,
     secondary,
     icon,
@@ -123,18 +122,26 @@ const Item: React.FC<WithStyles<typeof styles, false> & MenuItemProps & MuiListI
 
     const hasIcon = !!icon;
 
-    const listItemClasses = [classes.root, classes[`level${level}`]];
+    const listItemClasses = [classes.root];
+    if (level === 1) listItemClasses.push(classes.level1);
+    if (level === 2) listItemClasses.push(classes.level2);
     if (hasIcon) listItemClasses.push(classes.hasIcon);
     if (secondary) listItemClasses.push(classes.hasSecondaryText);
     if (secondaryAction) listItemClasses.push(classes.hasSecondaryAction);
 
     return (
-        <ListItem button {...otherProps} className={listItemClasses.join(" ")}>
-            {hasIcon && <ListItemIcon className={classes.listItemIcon}>{icon}</ListItemIcon>}
+        <ListItem component="div" button classes={{ root: listItemClasses.join(" ") }} {...otherProps}>
+            {hasIcon && <ListItemIcon>{icon}</ListItemIcon>}
             <ListItemText primary={primary} secondary={secondary} inset={!icon} />
             {!!secondaryAction && secondaryAction}
         </ListItem>
     );
 };
 
-export const MenuItem = withStyles(styles, { name: "CometAdminMenuItem", withTheme: true })(Item);
+export const MenuItem = withStyles(styles, { name: "CometAdminMenuItem" })(Item);
+
+declare module "@material-ui/core/styles/overrides" {
+    interface ComponentNameToClassKey {
+        CometAdminMenuItem: MenuItemClassKey;
+    }
+}

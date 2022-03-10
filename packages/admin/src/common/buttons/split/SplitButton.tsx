@@ -1,12 +1,14 @@
+import { ChevronDown } from "@comet/admin-icons";
 import { Button, ButtonGroup, ButtonGroupProps, MenuItem, MenuList, Popover } from "@material-ui/core";
+import { withStyles } from "@material-ui/styles";
 import * as React from "react";
 import { PropsWithChildren } from "react";
 
 import { useStoredState } from "../../../hooks/useStoredState";
-import { useThemeProps } from "./SplitButton.styles";
 import { SplitButtonContext } from "./SplitButtonContext";
 
 export interface SplitButtonProps extends ButtonGroupProps<any> {
+    selectIcon?: React.ReactNode;
     selectedIndex?: number;
     onSelectIndex?: (index: number, item: React.ReactElement) => void;
     showSelectButton?: boolean;
@@ -15,9 +17,9 @@ export interface SplitButtonProps extends ButtonGroupProps<any> {
     storage?: Storage;
 }
 
-// Based on https://material-ui.com/components/button-group/#split-button
-
-export const SplitButton = ({
+// Based on https://v4.mui.com/components/button-group/#split-button
+const SplitBtn = ({
+    selectIcon = <ChevronDown />,
     selectedIndex,
     onSelectIndex,
     children,
@@ -30,7 +32,6 @@ export const SplitButton = ({
     const [showSelectButtonState, setShowSelectButtonState] = React.useState<boolean | undefined>(undefined);
 
     const childrenArray = React.Children.toArray(children);
-    const themeProps = useThemeProps();
     const [uncontrolledSelectedIndex, setUncontrolledIndex] = useStoredState<number>(localStorageKey || false, 0, storage);
     const _selectedIndex = selectedIndex ?? uncontrolledSelectedIndex;
     const _onSelectIndex = onSelectIndex
@@ -83,7 +84,7 @@ export const SplitButton = ({
                         classes={ActiveChild.props.classes}
                         onClick={handleToggle}
                     >
-                        {themeProps.selectIcon}
+                        {selectIcon}
                     </Button>
                 )}
             </ButtonGroup>
@@ -92,7 +93,7 @@ export const SplitButton = ({
                 anchorEl={anchorRef.current}
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                 transformOrigin={{ vertical: "top", horizontal: "center" }}
-                onBackdropClick={handleClose}
+                onClose={handleClose}
             >
                 <MenuList>
                     {childrenArray.map((child: React.ReactElement, index) => {
@@ -112,3 +113,11 @@ export const SplitButton = ({
         </SplitButtonContext.Provider>
     );
 };
+
+export const SplitButton = withStyles({}, { name: "CometAdminSplitButton" })(SplitBtn);
+
+declare module "@material-ui/core/styles/props" {
+    interface ComponentsPropsList {
+        CometAdminSplitButton: SplitButtonProps;
+    }
+}

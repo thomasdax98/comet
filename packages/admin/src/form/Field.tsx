@@ -1,18 +1,19 @@
 import { FieldValidator } from "final-form";
 import * as React from "react";
 import { Field as FinalFormField, FieldMetaState, FieldRenderProps, FormSpy, useForm } from "react-final-form";
+import { FormattedMessage } from "react-intl";
 
-import { FieldContainer, FieldContainerThemeProps } from "./FieldContainer";
+import { FieldContainer, FieldContainerProps } from "./FieldContainer";
 import { useFinalFormContext } from "./FinalFormContextProvider";
 
-const requiredValidator = (value: any) => (value ? undefined : "Pflichtfeld");
+const requiredValidator = (value: any) => (value ? undefined : <FormattedMessage id="cometAdmin.form.required" defaultMessage="Required" />);
 
 const composeValidators =
     (...validators: Array<(value: any, allValues: object) => any>) =>
     (value: any, allValues: object) =>
         validators.reduce((error, validator) => error || validator(value, allValues), undefined);
 
-interface Props<FieldValue = any, T extends HTMLElement = HTMLElement> {
+export interface FieldProps<FieldValue = any, T extends HTMLElement = HTMLElement> {
     name: string;
     label?: React.ReactNode;
     component?: React.ComponentType<any> | string;
@@ -21,7 +22,7 @@ interface Props<FieldValue = any, T extends HTMLElement = HTMLElement> {
     disabled?: boolean;
     validate?: FieldValidator<FieldValue>;
     validateWarning?: FieldValidator<FieldValue>;
-    variant?: FieldContainerThemeProps["variant"];
+    variant?: FieldContainerProps["variant"];
     shouldScrollTo?: (meta: FieldMetaState<FieldValue>) => boolean;
     shouldShowError?: (meta: FieldMetaState<FieldValue>) => boolean;
     shouldShowWarning?: (meta: FieldMetaState<FieldValue>) => boolean;
@@ -40,7 +41,7 @@ export function Field<FieldValue = any, FieldElement extends HTMLElement = HTMLE
     shouldShowWarning: passedShouldShowWarning,
     shouldScrollTo: passedShouldScrollTo,
     ...otherProps
-}: Props<FieldValue, FieldElement>): React.ReactElement {
+}: FieldProps<FieldValue, FieldElement>): React.ReactElement {
     const { disabled, variant, fullWidth } = otherProps;
 
     const { mutators } = useForm();

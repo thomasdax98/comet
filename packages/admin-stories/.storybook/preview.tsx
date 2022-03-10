@@ -3,14 +3,15 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 
+import { MainContent, MuiThemeProvider } from "@comet/admin";
+import { createCometTheme } from "@comet/admin-theme";
+import { createTheme, Theme } from "@material-ui/core";
 import { select, withKnobs } from "@storybook/addon-knobs";
 import { addDecorator, addParameters } from "@storybook/react";
 import * as React from "react";
 import { IntlProvider } from "react-intl";
-import { MainContent, MuiThemeProvider } from "@comet/admin";
-import { createCometTheme } from "@comet/admin-theme";
-import { createTheme, Theme } from "@material-ui/core";
 import { createGlobalStyle } from "styled-components";
+
 import { previewGlobalStyles } from "./preview.styles";
 
 addDecorator((story, context) => {
@@ -79,7 +80,6 @@ addDecorator((story, ctx) => {
 const orderGettingStarted = [
     "docs-getting-started-installation",
     "docs-getting-started-structure",
-    "docs-getting-started-development",
     "docs-getting-started-develop-in-project",
     "docs-getting-started-how-to-write-stories",
     "docs-getting-started",
@@ -112,8 +112,8 @@ const orderForm = [
 ];
 const orderHooks = ["docs-hooks-hooks", "docs-hooks"];
 const orderIcons = ["docs-icons-list", "docs-icons-usage", "docs-icons"];
-const orderTheming = ["docs-theming"];
-const orderBestPractices = ["docs-best-practices-theming", "docs-best-practices-code-style", "docs-best-practices"];
+const orderBestPractices = ["docs-best-practices-overview", "docs-best-theme-and-styling", "docs-best-practices"];
+const orderDevelopment = ["docs-development-overview", "docs-development-create-a-component-with-theme-support", "docs-development"];
 
 const order = [
     "docs-intro-",
@@ -122,8 +122,8 @@ const order = [
     ...orderForm,
     ...orderHooks,
     ...orderIcons,
-    ...orderTheming,
     ...orderBestPractices,
+    ...orderDevelopment,
     "admin-",
     "comet-",
     "stories-",
