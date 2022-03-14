@@ -6,7 +6,7 @@ import { useHistory, useLocation } from "react-router";
 
 type UseUrlStateApi<T extends Record<string, any>> = [T | Record<string, any> | undefined, (value: T, reset?: boolean) => void];
 
-export const useUrlState = <T extends Record<string, any>>(): UseUrlStateApi<T> => {
+export const useUrlObjectState = <T extends Record<string, any>>(): UseUrlStateApi<T> => {
     const [value, _setValue] = React.useState<T | Record<string, any> | undefined>(undefined);
     const location = useLocation();
     const history = useHistory();
