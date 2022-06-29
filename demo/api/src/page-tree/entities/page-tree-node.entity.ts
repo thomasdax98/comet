@@ -1,6 +1,7 @@
 import { PageTreeNodeBase } from "@comet/cms-api";
 import { Embedded, Entity, Enum, Index, ManyToOne } from "@mikro-orm/core";
 import { Field, ObjectType } from "@nestjs/graphql";
+import { PageTreeNodeUserGroup } from "@src/page-tree/page-tree-node-user-group";
 
 import { PageTreeNodeScope } from "../dto/page-tree-node-scope";
 import { PageTreeNodeCategory } from "../page-tree-node-category";
@@ -21,4 +22,8 @@ export class PageTreeNode extends PageTreeNodeBase {
     @Enum({ items: () => PageTreeNodeCategory, default: PageTreeNodeCategory.MainNavigation })
     @Field(() => PageTreeNodeCategory)
     category: PageTreeNodeCategory;
+
+    @Enum({ items: () => PageTreeNodeUserGroup, default: PageTreeNodeUserGroup.All })
+    @Field(() => PageTreeNodeUserGroup, { defaultValue: PageTreeNodeUserGroup.All })
+    userGroup: PageTreeNodeUserGroup;
 }

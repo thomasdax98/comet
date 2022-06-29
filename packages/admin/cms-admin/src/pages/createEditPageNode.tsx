@@ -3,15 +3,16 @@ import { ErrorScope, Field, FieldContainer, FinalForm, FinalFormCheckbox, FinalF
 import { CircularProgress, FormControlLabel, MenuItem, Typography } from "@mui/material";
 import { Mutator } from "final-form";
 import setFieldTouched from "final-form-set-field-touched";
+import { DocumentNode } from "graphql";
 import debounce from "p-debounce";
 import React from "react";
 import { FormSpy } from "react-final-form";
 import { useIntl } from "react-intl";
 import slugify from "slugify";
 
-import { SyncFields } from "..";
 import { useContentScope } from "../contentScope/Provider";
 import { DocumentInterface, DocumentType } from "../documents/types";
+import { SyncFields } from "../form/SyncFields";
 import {
     GQLCreatePageNodeMutation,
     GQLCreatePageNodeMutationVariables,
@@ -30,24 +31,85 @@ import {
 import { useLocale } from "../locale/useLocale";
 import { automaticRedirectsRefetchQueryDescription } from "../redirects/RedirectsTable.gql";
 
-const editPageNodeQuery = gql`
-    query EditPageNode($id: ID!) {
-        page: pageTreeNode(id: $id) {
-            id
-            name
-            slug
-            path
-            documentType
-            hideInMenu
-            parentId
-            document {
-                ... on DocumentInterface {
-                    id
+type SerializedInitialValues = string;
+
+export interface EditPageNodeFinalFormValues {
+    [key: string]: unknown;
+}
+
+interface CreateEditPageNodeProps {
+    formFields?: React.ReactNode;
+    nodeFragment?: { name: string; fragment: DocumentNode };
+    valuesToInput?: (values: EditPageNodeFinalFormValues) => EditPageNodeFinalFormValues;
+}
+
+export interface UseEditPageNodeProps {
+    id: null | SerializedInitialValues | string; // when mode is add: SerializedInitialValues is expected
+    mode: "add" | "edit";
+    category: GQLPageTreeNodeCategory;
+    documentTypes: Record<DocumentType, DocumentInterface>;
+}
+
+export function createEditPageNode({
+    formFields,
+    nodeFragment,
+    valuesToInput,
+}: CreateEditPageNodeProps): (props: UseEditPageNodeProps) => JSX.Element {
+    const editPageNodeQuery = gql`
+        query EditPageNode($id: ID!) {
+            page: pageTreeNode(id: $id) {
+                id
+                name
+                slug
+                path
+                documentType
+                hideInMenu
+                parentId
+                document {
+                    ... on DocumentInterface {
+                        id
+                    }
                 }
+                ${nodeFragment ? "...".concat(nodeFragment?.name) : ""}
             }
         }
-    }
-`; // @TODO: use a graphql interface to ommit the ...on (DocumentInterface)
+        ${nodeFragment ? nodeFragment?.fragment : ""}
+    `; // @TODO: use a graphql interface to ommit the ...on (DocumentInterface)
+
+    const updatePageNodeMutation = gql`
+        mutation UpdatePageNode($nodeId: ID!, $input: PageTreeNodeUpdateInput!) {
+            updatePageTreeNode(id: $nodeId, input: $input) {
+                id
+                name
+                slug
+                documentType
+                hideInMenu
+                document {
+                    ... on DocumentInterface {
+                        id
+                    }
+                }
+                ${nodeFragment ? "...".concat(nodeFragment?.name) : ""}
+            }
+        }
+        ${nodeFragment ? nodeFragment?.fragment : ""}
+    `;
+
+    return function useEditPageNode({ id, mode, documentTypes, category }: UseEditPageNodeProps): JSX.Element {
+        return (
+            <EditPageNode
+                id={id}
+                mode={mode}
+                category={category}
+                documentTypes={documentTypes}
+                formFields={formFields}
+                valuesToInput={valuesToInput}
+                editPageNodeQuery={editPageNodeQuery}
+                updatePageNodeMutation={updatePageNodeMutation}
+            />
+        );
+    };
+}
 
 const isPathAvailableQuery = gql`
     query IsPathAvailable($parentId: ID, $slug: String!, $scope: PageTreeNodeScopeInput!) {
@@ -61,23 +123,6 @@ const editPageParentNodeQuery = gql`
             id
             path
             slug
-        }
-    }
-`;
-
-const updatePageNodeMutation = gql`
-    mutation UpdatePageNode($nodeId: ID!, $input: PageTreeNodeUpdateInput!) {
-        updatePageTreeNode(id: $nodeId, input: $input) {
-            id
-            name
-            slug
-            documentType
-            hideInMenu
-            document {
-                ... on DocumentInterface {
-                    id
-                }
-            }
         }
     }
 `;
@@ -98,8 +143,6 @@ interface FormValues {
     hideInMenu: boolean;
 }
 
-type SerializedInitialValues = string;
-
 const transformToSlug = (name: string, locale: string) => {
     let slug = slugify(name, { replacement: "-", lower: true, locale });
     // Remove everything except unreserved characters and percent encoding (https://tools.ietf.org/html/rfc3986#section-2.1)
@@ -115,10 +158,6 @@ const isValidSlug = (value: string) => {
 interface InitialValues {
     parent: null | string;
     pos?: number;
-}
-
-export function serializeInitialValues(initialValues: Partial<InitialValues> = {}): string {
-    return encodeURIComponent(JSON.stringify(initialValues));
 }
 
 function unserializeInitialValues(initialValues: string | null = null): InitialValues {
@@ -154,9 +193,22 @@ interface Props {
     mode: "add" | "edit";
     category: GQLPageTreeNodeCategory;
     documentTypes: Record<DocumentType, DocumentInterface>;
+    formFields?: React.ReactNode;
+    valuesToInput?: (values: EditPageNodeFinalFormValues) => EditPageNodeFinalFormValues;
+    editPageNodeQuery: DocumentNode;
+    updatePageNodeMutation: DocumentNode;
 }
 
-export function EditPageNode({ id, mode, category, documentTypes }: Props): React.ReactElement {
+export function EditPageNode({
+    id,
+    mode,
+    category,
+    documentTypes,
+    formFields,
+    editPageNodeQuery,
+    valuesToInput,
+    updatePageNodeMutation,
+}: Props): React.ReactElement {
     const { pos, parent } = unserializeInitialValues(id);
 
     const intl = useIntl();
@@ -194,7 +246,10 @@ export function EditPageNode({ id, mode, category, documentTypes }: Props): Reac
         parentPath = parentNodeData.pageTreeNode.slug === "home" ? "/home" : parentNodeData.pageTreeNode.path;
     }
 
-    const options = Object.keys(documentTypes).map((type) => ({ value: type, label: documentTypes[type].displayName }));
+    const options = Object.keys(documentTypes).map((type) => ({
+        value: type,
+        label: documentTypes[type].displayName,
+    }));
 
     const isPathAvailable = React.useCallback(
         async (newSlug: string): Promise<GQLSlugAvailability> => {
@@ -251,7 +306,6 @@ export function EditPageNode({ id, mode, category, documentTypes }: Props): Reac
     if (mode === "edit" && (loading || !data?.page)) {
         return <CircularProgress />;
     }
-
     return (
         <div>
             <FinalForm<FormValues>
@@ -260,7 +314,7 @@ export function EditPageNode({ id, mode, category, documentTypes }: Props): Reac
                     setFieldTouched: setFieldTouched as Mutator<FormValues>,
                 }}
                 onSubmit={async (values: FormValues) => {
-                    const input = {
+                    let input = {
                         name: values.name,
                         slug: values.slug,
                         hideInMenu: values.hideInMenu,
@@ -269,6 +323,11 @@ export function EditPageNode({ id, mode, category, documentTypes }: Props): Reac
                             type: values.documentType,
                         },
                     };
+
+                    if (valuesToInput) {
+                        input = { ...input, ...valuesToInput({ values }) };
+                    }
+
                     if (mode === "edit") {
                         if (!id) {
                             throw new Error("Missing ID in edit mode");
@@ -321,9 +380,11 @@ export function EditPageNode({ id, mode, category, documentTypes }: Props): Reac
                                 }}
                             />
                         )}
-
                         <Field
-                            label={intl.formatMessage({ id: "comet.pages.pages.page.name", defaultMessage: "Name" })}
+                            label={intl.formatMessage({
+                                id: "comet.pages.pages.page.name",
+                                defaultMessage: "Name",
+                            })}
                             name="name"
                             required
                             component={FinalFormInput}
@@ -332,7 +393,10 @@ export function EditPageNode({ id, mode, category, documentTypes }: Props): Reac
                         />
                         {slug !== "home" && (
                             <Field
-                                label={intl.formatMessage({ id: "comet.pages.pages.page.slug", defaultMessage: "Slug" })}
+                                label={intl.formatMessage({
+                                    id: "comet.pages.pages.page.slug",
+                                    defaultMessage: "Slug",
+                                })}
                                 name="slug"
                                 required
                                 fullWidth
@@ -352,7 +416,12 @@ export function EditPageNode({ id, mode, category, documentTypes }: Props): Reac
                                 }}
                             </Field>
                         )}
-                        <FieldContainer label={intl.formatMessage({ id: "comet.pages.pages.page.path", defaultMessage: "Complete Path" })}>
+                        <FieldContainer
+                            label={intl.formatMessage({
+                                id: "comet.pages.pages.page.path",
+                                defaultMessage: "Complete Path",
+                            })}
+                        >
                             <FormSpy subscription={{ values: true }}>
                                 {({ values }) => {
                                     if (!values.slug) {
@@ -372,7 +441,10 @@ export function EditPageNode({ id, mode, category, documentTypes }: Props): Reac
                             </FormSpy>
                         </FieldContainer>
                         <Field
-                            label={intl.formatMessage({ id: "comet.pages.pages.page.documentType", defaultMessage: "Document Type" })}
+                            label={intl.formatMessage({
+                                id: "comet.pages.pages.page.documentType",
+                                defaultMessage: "Document Type",
+                            })}
                             name="documentType"
                             required
                             fullWidth
@@ -390,11 +462,15 @@ export function EditPageNode({ id, mode, category, documentTypes }: Props): Reac
                         <Field name="hideInMenu" type="checkbox">
                             {(props) => (
                                 <FormControlLabel
-                                    label={intl.formatMessage({ id: "comet.pages.pages.page.hideInMenu", defaultMessage: "Hide in Menu" })}
+                                    label={intl.formatMessage({
+                                        id: "comet.pages.pages.page.hideInMenu",
+                                        defaultMessage: "Hide in Menu",
+                                    })}
                                     control={<FinalFormCheckbox {...props} />}
                                 />
                             )}
                         </Field>
+                        {formFields}
                     </>
                 )}
             />

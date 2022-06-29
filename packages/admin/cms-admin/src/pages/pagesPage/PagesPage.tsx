@@ -7,13 +7,13 @@ import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { ContentScopeIndicator } from "../..";
+import { ContentScopeIndicator, createEditPageNode } from "../..";
 import { useContentScope } from "../../contentScope/Provider";
 import { useContentScopeConfig } from "../../contentScope/useContentScopeConfig";
 import { DocumentInterface, DocumentType } from "../../documents/types";
 import { GQLPagesQuery, GQLPagesQueryVariables, GQLPageTreeNodeCategory, GQLPageTreePageFragment } from "../../graphql.generated";
 import { useSiteConfig } from "../../sitesConfig/useSiteConfig";
-import { EditPageNode } from "../EditPageNode";
+import { UseEditPageNodeProps } from "../createEditPageNode";
 import { PageSearch } from "../pageSearch/PageSearch";
 import { usePageSearch } from "../pageSearch/usePageSearch";
 import { PageTree, PageTreeRefApi } from "../pageTree/PageTree";
@@ -46,9 +46,12 @@ interface Props {
     path: string;
     allCategories: AllCategories;
     documentTypes: Record<DocumentType, DocumentInterface>;
+    editPageNode?: (props: UseEditPageNodeProps) => JSX.Element;
 }
 
-export function PagesPage({ category, path, allCategories, documentTypes }: Props): React.ReactElement {
+const DefaultEditPageNode = createEditPageNode({});
+
+export function PagesPage({ category, path, allCategories, documentTypes, editPageNode }: Props): React.ReactElement {
     const intl = useIntl();
     const { scope, setRedirectPathAfterChange } = useContentScope();
     useContentScopeConfig({ redirectPathAfterChange: path });
@@ -171,10 +174,12 @@ export function PagesPage({ category, path, allCategories, documentTypes }: Prop
                     </PageTreeContext.Provider>
 
                     <EditDialog>
-                        {editDialogSelection.mode && (
-                            <EditPageNode
-                                mode={editDialogSelection.mode}
+                        {editPageNode ? (
+                            editPageNode({ id: editDialogSelection.id || null, mode: editDialogSelection.mode ?? "add", category, documentTypes })
+                        ) : (
+                            <DefaultEditPageNode
                                 id={editDialogSelection.id || null}
+                                mode={editDialogSelection.mode ?? "add"}
                                 category={category}
                                 documentTypes={documentTypes}
                             />

@@ -15,7 +15,6 @@ import {
     DamConfigProvider,
     DamPage,
     LocaleProvider,
-    PagesPage,
     Publisher,
     Redirects,
     SiteConfig,
@@ -28,6 +27,7 @@ import { createApolloClient } from "@src/common/apollo/createApolloClient";
 import ContentScopeProvider, { ContentScope } from "@src/common/ContentScopeProvider";
 import MasterHeader from "@src/common/MasterHeader";
 import MasterMenu from "@src/common/MasterMenu";
+import PagesPage from "@src/common/PagesPage";
 import config from "@src/config";
 import Dashboard from "@src/dashboard/Dashboard";
 import theme from "@src/theme";
@@ -39,10 +39,8 @@ import { FormattedMessage, IntlProvider } from "react-intl";
 import { Redirect, Route, Switch } from "react-router-dom";
 
 import { ComponentDemo } from "./common/ComponentDemo";
-import { Link } from "./links/Link";
 import News from "./news/News";
 import MainMenu from "./pages/mainMenu/MainMenu";
-import { Page } from "./pages/Page";
 
 const GlobalStyle = () => (
     <Global
@@ -139,12 +137,7 @@ class App extends React.Component {
                                                                                             <Route
                                                                                                 path={`${match.path}/pages/pagetree/:category`}
                                                                                                 render={() => (
-                                                                                                    <PagesPage
-                                                                                                        category="MainNavigation"
-                                                                                                        allCategories={categories}
-                                                                                                        path="/pages/pagetree/main-navigation"
-                                                                                                        documentTypes={{ Page, Link }}
-                                                                                                    />
+                                                                                                    <PagesPage allCategories={categories} />
                                                                                                 )}
                                                                                             />
 

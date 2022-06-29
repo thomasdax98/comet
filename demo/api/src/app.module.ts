@@ -22,6 +22,7 @@ import { ConfigModule } from "@src/config/config.module";
 import { configNS } from "@src/config/config.namespace";
 import { DbModule } from "@src/db/db.module";
 import { LinksModule } from "@src/links/links.module";
+import { PageTreeNodeCreateInput, PageTreeNodeUpdateInput } from "@src/page-tree/dto/page-tree-node.input";
 import { PagesModule } from "@src/pages/pages.module";
 
 import { FooterModule } from "./footer/footer.module";
@@ -93,6 +94,8 @@ import { Page } from "./pages/entities/page.entity";
         PagesModule,
         PageTreeModule.forRoot({
             PageTreeNode: PageTreeNode,
+            PageTreeNodeCreateInput: PageTreeNodeCreateInput,
+            PageTreeNodeUpdateInput: PageTreeNodeUpdateInput,
             Documents: [Page, Link],
             Scope: PageTreeNodeScope,
             Category: PageTreeNodeCategory,
@@ -125,7 +128,6 @@ import { Page } from "./pages/entities/page.entity";
                                       secretAccessKey: config.S3_SECRET_ACCESS_KEY,
                                       endpoint: config.S3_ENDPOINT,
                                       region: config.S3_REGION,
-                                      bucket: config.S3_BUCKET,
                                   }
                                 : undefined,
                     } as BlobStorageConfig["backend"],
