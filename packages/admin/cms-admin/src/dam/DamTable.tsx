@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client";
 import {
-    EditDialogApiContext,
     IFilterApi,
     ISortInformation,
     messages,
@@ -26,6 +25,7 @@ import { TextMatch } from "../common/MarkedMatches";
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
 import { GQLDamFileTableFragment, GQLDamFolderQuery, GQLDamFolderQueryVariables, GQLDamFolderTableFragment } from "../graphql.generated";
 import EditFile from "./FileForm/EditFile";
+import AddFolder from "./FolderForm/AddFolder";
 import { FileUploadContextProvider } from "./Table/fileUpload/FileUploadContext";
 import { UploadSplitButton } from "./Table/fileUpload/UploadSplitButton";
 import { DamTableFilter } from "./Table/filter/DamTableFilter";
@@ -61,7 +61,7 @@ export interface DamFilter {
 const Folder = ({ id, filterApi, ...props }: FolderProps) => {
     const intl = useIntl();
     const stackApi = useStackApi();
-    const [, , editDialogApi, selectionApi] = useEditDialog();
+    const [EditDialog, selection, editDialogApi, selectionApi] = useEditDialog();
 
     // The selectedFolderId is only used to determine the name of a folder for the "folder" stack page
     // If you want to use the id of the current folder in the "table" stack page, use the id prop
@@ -77,44 +77,50 @@ const Folder = ({ id, filterApi, ...props }: FolderProps) => {
     return (
         <StackSwitch initialPage="table">
             <StackPage name="table">
-                <EditDialogApiContext.Provider value={editDialogApi}>
-                    {!props.disableScopeIndicator && (
-                        <ContentScopeIndicator variant="toolbar" global>
-                            <ScopeIndicatorContent>
-                                <Domain fontSize="small" />
-                                <ScopeIndicatorLabelBold variant="body2">
-                                    <FormattedMessage {...messages.globalContentScope} />
-                                </ScopeIndicatorLabelBold>
-                            </ScopeIndicatorContent>
-                        </ContentScopeIndicator>
-                    )}
+                {!props.disableScopeIndicator && (
+                    <ContentScopeIndicator variant="toolbar" global>
+                        <ScopeIndicatorContent>
+                            <Domain fontSize="small" />
+                            <ScopeIndicatorLabelBold variant="body2">
+                                <FormattedMessage {...messages.globalContentScope} />
+                            </ScopeIndicatorLabelBold>
+                        </ScopeIndicatorContent>
+                    </ContentScopeIndicator>
+                )}
 
-                    <Toolbar>
-                        <ToolbarItem>
-                            <DamTableFilter hideArchiveFilter={props.hideArchiveFilter} filterApi={filterApi} />
-                        </ToolbarItem>
-                        <ToolbarFillSpace />
-                        <ToolbarActions>
-                            <Button
-                                variant="text"
-                                color="inherit"
-                                startIcon={<AddFolderIcon />}
-                                onClick={() => {
-                                    editDialogApi.openAddDialog(id);
-                                }}
-                            >
-                                <FormattedMessage id="comet.pages.dam.addFolder" defaultMessage="Add Folder" />
-                            </Button>
-                            <UploadSplitButton
-                                folderId={id}
-                                filter={{
-                                    allowedMimetypes: props.allowedMimetypes,
-                                }}
-                            />
-                        </ToolbarActions>
-                    </Toolbar>
-                    <FolderTable id={id} breadcrumbs={stackApi?.breadCrumbs} selectionApi={selectionApi} filterApi={filterApi} {...props} />
-                </EditDialogApiContext.Provider>
+                <Toolbar>
+                    <ToolbarItem>
+                        <DamTableFilter hideArchiveFilter={props.hideArchiveFilter} filterApi={filterApi} />
+                    </ToolbarItem>
+                    <ToolbarFillSpace />
+                    <ToolbarActions>
+                        <Button
+                            variant="text"
+                            color="inherit"
+                            startIcon={<AddFolderIcon />}
+                            onClick={() => {
+                                editDialogApi.openAddDialog(id);
+                            }}
+                        >
+                            <FormattedMessage id="comet.pages.dam.addFolder" defaultMessage="Add Folder" />
+                        </Button>
+                        <UploadSplitButton
+                            folderId={id}
+                            filter={{
+                                allowedMimetypes: props.allowedMimetypes,
+                            }}
+                        />
+                    </ToolbarActions>
+                </Toolbar>
+                <FolderTable id={id} breadcrumbs={stackApi?.breadCrumbs} filterApi={filterApi} {...props} />
+                <EditDialog
+                    title={{
+                        add: <FormattedMessage id="comet.dam.folderEditDialog.add" defaultMessage="Add folder" />,
+                        edit: <FormattedMessage id="comet.dam.folderEditDialog.edit" defaultMessage="Edit folder" />,
+                    }}
+                >
+                    {selection.mode === "add" && <AddFolder parentId={selection.id} selectionApi={selectionApi} />}
+                </EditDialog>
             </StackPage>
             <StackPage name="edit" title={intl.formatMessage({ id: "comet.pages.dam.edit", defaultMessage: "Edit" })}>
                 {(selectedId: string) => {

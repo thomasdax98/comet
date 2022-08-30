@@ -1,24 +1,12 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import {
-    BreadcrumbItem,
-    EditDialog,
-    IFilterApi,
-    ISelectionApi,
-    ITableColumn,
-    MainContent,
-    PrettyBytes,
-    Table,
-    TableColumns,
-    TableQuery,
-    useTableQuery,
-} from "@comet/admin";
+import { BreadcrumbItem, IFilterApi, ITableColumn, MainContent, PrettyBytes, Table, TableColumns, TableQuery, useTableQuery } from "@comet/admin";
 import { StackLink } from "@comet/admin/lib/stack/StackLink";
 import { Link } from "@mui/material";
 import * as React from "react";
 import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import { FileRejection, useDropzone } from "react-dropzone";
-import { FormattedDate, FormattedMessage, FormattedTime, useIntl } from "react-intl";
+import { FormattedDate, FormattedTime, useIntl } from "react-intl";
 import { useDebouncedCallback, useThrottledCallback } from "use-debounce";
 
 import {
@@ -31,8 +19,6 @@ import {
 } from "../../graphql.generated";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
 import { DamConfig, DamFilter } from "../DamTable";
-import AddFolder from "../FolderForm/AddFolder";
-import EditFolder from "../FolderForm/EditFolder";
 import { DamActions } from "./damActions/DamActions";
 import DamContextMenu from "./DamContextMenu";
 import { DamDnDFooter, FooterType } from "./DamDnDFooter";
@@ -50,14 +36,12 @@ interface FolderTableProps extends DamConfig {
     id?: string;
     breadcrumbs?: BreadcrumbItem[];
     filterApi: IFilterApi<DamFilter>;
-    selectionApi: ISelectionApi;
 }
 
 const FolderTable = ({
     id,
     filterApi,
     breadcrumbs,
-    selectionApi,
     hideContextMenu,
     hideArchiveFilter,
     renderDamLabel,
@@ -330,21 +314,21 @@ const FolderTable = ({
                         </TableQuery>
                     </sc.TableHoverHighlight>
                 </sc.TableWrapper>
-                <EditDialog
-                    title={{
-                        edit: <FormattedMessage id="comet.dam.folderEditDialog.renameFolder" defaultMessage="Rename folder" />,
-                        add: <FormattedMessage id="comet.dam.folderEditDialog.addFolder" defaultMessage="Add folder" />,
-                    }}
-                >
-                    {({ selectedId, selectionMode }) => {
-                        return (
-                            <>
-                                {selectionMode === "add" && <AddFolder parentId={selectedId} selectionApi={selectionApi} />}
-                                {selectionMode === "edit" && <EditFolder id={selectedId as string} selectionApi={selectionApi} />}
-                            </>
-                        );
-                    }}
-                </EditDialog>
+                {/*<EditDialog*/}
+                {/*    title={{*/}
+                {/*        edit: <FormattedMessage id="comet.dam.folderEditDialog.renameFolder" defaultMessage="Rename folder" />,*/}
+                {/*        add: <FormattedMessage id="comet.dam.folderEditDialog.addFolder" defaultMessage="Add folder" />,*/}
+                {/*    }}*/}
+                {/*>*/}
+                {/*    {({ selectedId, selectionMode }) => {*/}
+                {/*        return (*/}
+                {/*            <>*/}
+                {/*                {selectionMode === "add" && <AddFolder parentId={selectedId} />}*/}
+                {/*                {selectionMode === "edit" && <EditFolder id={selectedId as string} />}*/}
+                {/*            </>*/}
+                {/*        );*/}
+                {/*    }}*/}
+                {/*</EditDialog>*/}
                 <DamDnDFooter type={footerType} open={footerType !== undefined} folderName={footerFolderName} />
             </TableContainer>
             {fileUploadDialogs}
