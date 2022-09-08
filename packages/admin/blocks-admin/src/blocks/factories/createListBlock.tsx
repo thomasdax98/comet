@@ -19,17 +19,19 @@ import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockInterface, BlockState, PreviewContent } from "../types";
 import { createUseAdminComponent } from "./listBlock/createUseAdminComponent";
 
-export interface ListBlockItem<T extends BlockInterface> {
+type BaseAdditionalItemFields = Record<string, unknown>;
+
+export type ListBlockItem<T extends BlockInterface, AdditionalItemFields extends BaseAdditionalItemFields> = {
     [key: string]: unknown;
     key: string;
     visible: boolean;
     props: BlockState<T>;
     selected: boolean;
     slideIn: boolean;
-}
+} & AdditionalItemFields;
 
-export interface ListBlockState<T extends BlockInterface> {
-    blocks: ListBlockItem<T>[];
+export interface ListBlockState<T extends BlockInterface, AdditionalItemFields extends BaseAdditionalItemFields> {
+    blocks: ListBlockItem<T, AdditionalItemFields>[];
 }
 
 export interface ListBlockFragment {
@@ -46,7 +48,7 @@ export interface AdditionalItemField<Value = unknown> {
     defaultValue: Value;
 }
 
-interface CreateListBlockOptions<T extends BlockInterface> {
+interface CreateListBlockOptions<T extends BlockInterface, AdditionalItemFields extends BaseAdditionalItemFields> {
     name: string;
     displayName?: React.ReactNode;
     itemName?: React.ReactNode;
@@ -54,16 +56,24 @@ interface CreateListBlockOptions<T extends BlockInterface> {
     block: T;
     maxVisibleBlocks?: number;
     createDefaultListEntry?: boolean;
-    additionalItemFields?: Record<string, AdditionalItemField>;
+    additionalItemFields?: {
+        [key in keyof AdditionalItemFields]: AdditionalItemField<AdditionalItemFields[key]>;
+    };
     AdditionalItemContextMenuItems?: React.FunctionComponent<{
-        item: ListBlockItem<T>;
-        onChange: (item: ListBlockItem<T>) => void;
+        item: ListBlockItem<T, AdditionalItemFields>;
+        onChange: (item: ListBlockItem<T, AdditionalItemFields>) => void;
         onMenuClose: () => void;
     }>;
-    AdditionalItemContent?: React.FunctionComponent<{ item: ListBlockItem<T> }>;
+    AdditionalItemContent?: React.FunctionComponent<{ item: ListBlockItem<T, AdditionalItemFields> }>;
 }
 
-export function createListBlock<T extends BlockInterface>({
+/* type BaseListBlockInterface = { blocks: Array<{ key: string }> };
+
+type AdditionalFields = AdditionalFields<LinkListBlockData>;
+
+type AdditionalFields<ListBlockData extends { blocks: Array<{ key: string }> }> = Omit<ListBlockData["blocks"][number], "key" | "visible" | "props">; */
+
+export function createListBlock<T extends BlockInterface, AdditionalItemFields extends BaseAdditionalItemFields>({
     name,
     block,
     displayName = <FormattedMessage id="comet.blocks.listBlock.name" defaultMessage="List" />,
@@ -71,12 +81,13 @@ export function createListBlock<T extends BlockInterface>({
     itemsName = <FormattedMessage id="comet.blocks.listBlock.itemsName" defaultMessage="blocks" />,
     maxVisibleBlocks,
     createDefaultListEntry,
+    // @ts-expect-error TODO
     additionalItemFields = {},
     AdditionalItemContextMenuItems,
     AdditionalItemContent,
-}: CreateListBlockOptions<T>): BlockInterface<ListBlockFragment, ListBlockState<T>> {
+}: CreateListBlockOptions<T, AdditionalItemFields>): BlockInterface<ListBlockFragment, ListBlockState<T, AdditionalItemFields>> {
     const useAdminComponent = createUseAdminComponent({ block, maxVisibleBlocks, additionalItemFields });
-    const BlockListBlock: BlockInterface<ListBlockFragment, ListBlockState<T>> = {
+    const BlockListBlock: BlockInterface<ListBlockFragment, ListBlockState<T, AdditionalItemFields>> = {
         ...createBlockSkeleton(),
 
         name,
@@ -84,6 +95,7 @@ export function createListBlock<T extends BlockInterface>({
         displayName,
 
         defaultValues: () => ({
+            // @ts-expect-error TODO
             blocks: createDefaultListEntry
                 ? [
                       {
@@ -103,6 +115,7 @@ export function createListBlock<T extends BlockInterface>({
 
         category: block.category,
 
+        // @ts-expect-error TODO
         input2State: (s) => {
             return {
                 ...s,
@@ -134,7 +147,7 @@ export function createListBlock<T extends BlockInterface>({
         },
 
         output2State: async (output, context) => {
-            const state: ListBlockState<T> = {
+            const state: ListBlockState<T, AdditionalItemFields> = {
                 blocks: [],
             };
 

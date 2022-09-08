@@ -10,6 +10,7 @@ export { AdminTabs } from "./blocks/common/AdminTabs";
 export { BlockPreview } from "./blocks/common/blockRow/BlockPreview";
 export { BlockRow } from "./blocks/common/blockRow/BlockRow";
 export { HiddenInSubroute } from "./blocks/common/HiddenInSubroute";
+export type { ExtractAdditionalItemFields } from "./blocks/factories/additionalItemFieldsHelpers";
 export { ColumnsLayoutPreview, ColumnsLayoutPreviewContent, ColumnsLayoutPreviewSpacing } from "./blocks/factories/columnsBlock/ColumnsLayoutPreview";
 export { FinalFormLayoutSelect } from "./blocks/factories/columnsBlock/FinalFormLayoutSelect";
 export type { BlocksBlockFragment, BlocksBlockState } from "./blocks/factories/createBlocksBlock";

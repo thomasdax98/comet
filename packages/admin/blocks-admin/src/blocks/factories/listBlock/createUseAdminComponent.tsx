@@ -15,7 +15,7 @@ interface CreateListBlockUseAdminComponentOptions<T extends BlockInterface> {
     additionalItemFields?: Record<string, AdditionalItemField>;
 }
 
-type ListBlockUseAdminComponentProps<T extends BlockInterface> = BlockAdminComponentProps<ListBlockState<T>>;
+type ListBlockUseAdminComponentProps<T extends BlockInterface> = BlockAdminComponentProps<ListBlockState<T, any>>;
 
 interface ListBlockUseAdminComponentApi<T extends BlockInterface> {
     cannotPasteBlockErrorDialog: React.ReactNode;
@@ -33,7 +33,7 @@ interface ListBlockUseAdminComponentApi<T extends BlockInterface> {
     selectedCount: number;
 }
 
-type ListBlockItem<T extends BlockInterface> = ListBlockState<T>["blocks"][0];
+type ListBlockItem<T extends BlockInterface> = ListBlockState<T, any>["blocks"][0];
 type RemovedListBlockItem<T extends BlockInterface> = ListBlockItem<T> & { removedAt: number };
 
 export function createUseAdminComponent<T extends BlockInterface>({

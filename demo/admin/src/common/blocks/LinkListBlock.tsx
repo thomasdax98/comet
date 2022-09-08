@@ -1,4 +1,5 @@
-import { createListBlock } from "@comet/blocks-admin";
+import { createListBlock, ExtractAdditionalItemFields } from "@comet/blocks-admin";
+import { LinkListBlockData } from "@src/blocks.generated";
 import { userGroupAdditionalItemFields } from "@src/userGroups/userGroupAdditionalItemFields";
 import { UserGroupChip } from "@src/userGroups/UserGroupChip";
 import { UserGroupContextMenuItem } from "@src/userGroups/UserGroupContextMenuItem";
@@ -7,7 +8,7 @@ import { FormattedMessage } from "react-intl";
 
 import { TextLinkBlock } from "./TextLinkBlock";
 
-export const LinkListBlock = createListBlock({
+export const LinkListBlock = createListBlock<typeof TextLinkBlock, ExtractAdditionalItemFields<LinkListBlockData>>({
     name: "LinkList",
     block: TextLinkBlock,
     displayName: <FormattedMessage id="cometDemo.blocks.linkList.displayName" defaultMessage="Link list" />,
@@ -17,13 +18,9 @@ export const LinkListBlock = createListBlock({
         ...userGroupAdditionalItemFields,
     },
     AdditionalItemContextMenuItems: ({ item, onChange, onMenuClose }) => {
-        // TODO fix typing: infer additional fields somehow
-        // @ts-expect-error missing additional field
         return <UserGroupContextMenuItem item={item} onChange={onChange} onMenuClose={onMenuClose} />;
     },
     AdditionalItemContent: ({ item }) => {
-        // TODO fix typing: infer additional fields somehow
-        // @ts-expect-error missing additional field
         return <UserGroupChip item={item} />;
     },
 });

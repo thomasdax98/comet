@@ -48,7 +48,7 @@ interface ColumnsBlockFragment<T extends BlockInterface> {
 
 interface ColumnsBlockState<T extends BlockInterface> {
     layout: ColumnsBlockLayout;
-    columns: ListBlockItem<T>[];
+    columns: ListBlockItem<T, any>[];
 }
 
 interface CreateColumnsBlockOptions<T extends BlockInterface> {
@@ -72,7 +72,7 @@ export function createColumnsBlock<T extends BlockInterface>({
 
     const useListBlockAdminComponent = createUseListBlockAdminComponent({ block: contentBlock });
 
-    function createEmptyColumns(number: number): ListBlockItem<T>[] {
+    function createEmptyColumns(number: number): ListBlockItem<T, any>[] {
         return new Array(number).fill(undefined).map(() => ({
             key: uuid(),
             props: contentBlock.defaultValues(),
@@ -177,7 +177,7 @@ export function createColumnsBlock<T extends BlockInterface>({
         AdminComponent: ({ state, updateState }) => {
             const intl = useIntl();
             const groupLayoutsByColumnsApi = createGroupLayoutsByColumnsApi(layouts);
-            const handleListBlockAdminChange: DispatchSetStateAction<ListBlockState<T>> = (listBlockSetStateAction) => {
+            const handleListBlockAdminChange: DispatchSetStateAction<ListBlockState<T, any>> = (listBlockSetStateAction) => {
                 updateState((prevState) => {
                     const listBlockState = resolveNewState({
                         prevState: { blocks: prevState.columns },
