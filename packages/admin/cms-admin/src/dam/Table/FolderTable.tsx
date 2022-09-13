@@ -5,6 +5,7 @@ import {
     IFilterApi,
     ISelectionApi,
     ITableColumn,
+    LocalErrorScopeApolloContext,
     MainContent,
     PrettyBytes,
     Table,
@@ -13,14 +14,16 @@ import {
     useTableQuery,
 } from "@comet/admin";
 import { StackLink } from "@comet/admin/lib/stack/StackLink";
-import { Link } from "@mui/material";
+import { Link, Typography } from "@mui/material";
 import * as React from "react";
 import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { FormattedDate, FormattedMessage, FormattedTime, useIntl } from "react-intl";
+import { Link as RouterLink } from "react-router-dom";
 import { useDebouncedCallback, useThrottledCallback } from "use-debounce";
 
+import { useContentScope } from "../../contentScope/Provider";
 import {
     GQLDamFileTableFragment,
     GQLDamFolderQuery,
@@ -43,6 +46,7 @@ import * as sc from "./FolderTable.sc";
 import FolderTableDragLayer from "./FolderTableDragLayer";
 import { FolderTableRow, isFile, isFolder } from "./FolderTableRow";
 import { DamMultiselectContext, useDamMultiselect } from "./multiselect/DamMultiselect";
+import { usePersistedDamLocation } from "./RedirectToPersistedDamLocation";
 import { TableHead } from "./TableHead";
 import { useDamSearchHighlighting } from "./useDamSearchHighlighting";
 
@@ -67,6 +71,8 @@ const FolderTable = ({
     const client = useApolloClient();
     const intl = useIntl();
     const { allAcceptedMimeTypes } = useDamAcceptedMimeTypes();
+    const { match: scopeMatch } = useContentScope();
+    const persistedDamLocationApi = usePersistedDamLocation();
 
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [footerType, setFooterType] = React.useState<FooterType>();
@@ -112,12 +118,13 @@ const FolderTable = ({
         setIsHovered(false);
     };
 
-    const { data } = useQuery<GQLDamFolderQuery, GQLDamFolderQueryVariables>(damFolderQuery, {
+    const { data, error: errorLoadingFolder } = useQuery<GQLDamFolderQuery, GQLDamFolderQueryVariables>(damFolderQuery, {
         variables: {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             id: id!,
         },
         skip: id === undefined,
+        context: LocalErrorScopeApolloContext,
     });
 
     const {
@@ -273,6 +280,29 @@ const FolderTable = ({
             event.stopPropagation();
         },
     });
+
+    if (errorLoadingFolder) {
+        // console.log("error loading folder ", errorLoadingFolder);
+        persistedDamLocationApi?.reset();
+
+        return (
+            <TableContainer>
+                <Typography color="error">
+                    <FormattedMessage
+                        id="comet.dam.folder.failedToLoad"
+                        defaultMessage="Failed to load folder. <link>Go to main folder</link>"
+                        values={{
+                            link: (chunks: string) => (
+                                <Link to={`${scopeMatch.url}/assets`} component={RouterLink}>
+                                    {chunks}
+                                </Link>
+                            ),
+                        }}
+                    />
+                </Typography>
+            </TableContainer>
+        );
+    }
 
     return (
         <DamMultiselectContext.Provider value={damMultiselectApi}>

@@ -1,4 +1,4 @@
-import { BreadcrumbItem } from "@comet/admin";
+import { BreadcrumbItem, LocalErrorScopeApolloContext } from "@comet/admin";
 import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as React from "react";
@@ -7,6 +7,7 @@ import { FormattedMessage } from "react-intl";
 import { useOptimisticQuery } from "../../common/useOptimisticQuery";
 import { GQLDamFolderMPathFragment, GQLDamFolderMPathQuery, GQLDamFolderMPathQueryVariables } from "../../graphql.generated";
 import FolderBreadcrumbs from "./breadcrumbs/FolderBreadcrumbs";
+import { usePersistedDamLocation } from "./RedirectToPersistedDamLocation";
 import { damFolderMPathFragment, damFolderMPathQuery } from "./TableHead.gql";
 
 interface TableHeadProps {
@@ -30,14 +31,16 @@ const BoldTypography = styled(Typography)`
 
 export const TableHead = ({ isSearching, numberItems, breadcrumbs, folderId }: TableHeadProps): React.ReactElement => {
     let content: React.ReactNode = null;
+    const persistedDamLocationApi = usePersistedDamLocation();
 
-    const { data, loading } = useOptimisticQuery<GQLDamFolderMPathQuery, GQLDamFolderMPathQueryVariables>(damFolderMPathQuery, {
+    const { data, loading, error } = useOptimisticQuery<GQLDamFolderMPathQuery, GQLDamFolderMPathQueryVariables>(damFolderMPathQuery, {
         variables: {
             // Cannot be null because of skip
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             id: folderId!,
         },
         skip: !folderId,
+        context: LocalErrorScopeApolloContext,
         optimisticResponse: (cache) => {
             const fragment = cache.readFragment<GQLDamFolderMPathFragment>({
                 id: cache.identify({ __typename: "DamFolder", id: folderId ?? null }),
@@ -47,6 +50,10 @@ export const TableHead = ({ isSearching, numberItems, breadcrumbs, folderId }: T
             return fragment ? { damFolder: fragment } : undefined;
         },
     });
+
+    if (error) {
+        persistedDamLocationApi?.reset();
+    }
 
     if (isSearching) {
         content = (
