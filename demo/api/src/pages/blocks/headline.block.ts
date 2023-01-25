@@ -30,6 +30,9 @@ class HeadlineBlockData extends BlockData {
 
     @BlockField({ type: "enum", enum: HeadlineLevel })
     level: HeadlineLevel;
+
+    @BlockField({ nullable: true, array: true })
+    test?: string[];
 }
 
 class HeadlineBlockInput extends BlockInput {
@@ -45,6 +48,11 @@ class HeadlineBlockInput extends BlockInput {
     @IsEnum(HeadlineLevel)
     @BlockField({ type: "enum", enum: HeadlineLevel })
     level: HeadlineLevel;
+
+    @IsOptional()
+    @IsString()
+    @BlockField({ nullable: true, array: true })
+    test?: string[];
 
     transformToBlockData(): HeadlineBlockData {
         return inputToData(HeadlineBlockData, this);

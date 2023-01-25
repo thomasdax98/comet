@@ -23,7 +23,9 @@ type BlockFieldOptions =
           nullable?: boolean;
       }
     | {
+          type?: "string" | "number" | "boolean";
           nullable?: boolean;
+          array?: boolean;
       }
     | {
           type: "block";
@@ -49,6 +51,7 @@ type BlockFieldData =
     | {
           kind: BlockMetaLiteralFieldKind;
           nullable: boolean;
+          array: boolean;
       }
     | { kind: BlockMetaFieldKind.Enum; enum: string[]; nullable: boolean }
     | { kind: BlockMetaFieldKind.Block; block: Block; nullable: boolean }
@@ -64,13 +67,14 @@ export function getBlockFieldData(ctor: { prototype: any }, propertyKey: string)
     const fieldType = Reflect.getMetadata(`data:fieldType`, ctor.prototype, propertyKey);
 
     const nullable = !!(fieldType && fieldType.nullable);
+    const array = !!(fieldType && fieldType.array);
 
     if (fieldType && fieldType.type) {
         if (fieldType.type === "enum") {
             const enumValues = Array.isArray(fieldType.enum) ? fieldType.enum : Object.values(fieldType.enum);
             ret = { kind: BlockMetaFieldKind.Enum, enum: enumValues, nullable };
         } else if (fieldType.type === "json") {
-            ret = { kind: BlockMetaFieldKind.Json, nullable };
+            ret = { kind: BlockMetaFieldKind.Json, nullable, array };
         } else if (fieldType.type === "block") {
             ret = { kind: BlockMetaFieldKind.Block, block: fieldType.block, nullable };
         } else {
@@ -83,15 +87,17 @@ export function getBlockFieldData(ctor: { prototype: any }, propertyKey: string)
             ret = { kind: BlockMetaFieldKind.NestedObject, object: designType, nullable };
         }
     } else {
+        console.log(fieldType);
+
         switch (designType.name) {
             case "String":
-                ret = { kind: BlockMetaFieldKind.String, nullable };
+                ret = { kind: BlockMetaFieldKind.String, nullable, array };
                 break;
             case "Number":
-                ret = { kind: BlockMetaFieldKind.Number, nullable };
+                ret = { kind: BlockMetaFieldKind.Number, nullable, array };
                 break;
             case "Boolean":
-                ret = { kind: BlockMetaFieldKind.Boolean, nullable };
+                ret = { kind: BlockMetaFieldKind.Boolean, nullable, array };
                 break;
             case "Object":
                 if (fieldType && fieldType.blockDataFactory) {
@@ -105,6 +111,8 @@ export function getBlockFieldData(ctor: { prototype: any }, propertyKey: string)
                 }
                 break;
             case "Array":
+                console.log(fieldType, typeof fieldType, designType.name);
+
                 if (!fieldType || !(isBlockDataInterface(fieldType.prototype) || isBlockInputInterface(fieldType.prototype))) {
                     throw new Error(`In ${designType.name} for ${propertyKey} only SubBlocks implementing BlockDataInterface are allowed`);
                 }
