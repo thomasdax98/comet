@@ -1,4 +1,5 @@
-import { DynamicModule, Global, Module, ModuleMetadata } from "@nestjs/common";
+import { DynamicModule, Global, Module, ModuleMetadata, Provider } from "@nestjs/common";
+import * as console from "console";
 
 import { BlockIndexService } from "./block-index.service";
 import { BlockMigrateService } from "./block-migrate.service";
@@ -6,6 +7,7 @@ import { BLOCKS_MODULE_OPTIONS, BLOCKS_MODULE_TRANSFORMER_DEPENDENCIES } from ".
 import { BlocksMetaService } from "./blocks-meta.service";
 import { BlocksTransformerService } from "./blocks-transformer.service";
 import { CommandsService } from "./commands.service";
+import { createDependenciesFieldResolver } from "./dependency-field.resolver";
 import { DiscoverService } from "./discover.service";
 
 export interface BlocksModuleOptions {
@@ -37,6 +39,32 @@ export class BlocksModule {
             inject: [BLOCKS_MODULE_OPTIONS],
         };
 
+        const dependencyProviders: Provider = {
+            provide: "DependencyProviders",
+            useFactory: (discoverService: DiscoverService) => {
+                const rootEntities = discoverService.discoverRootEntities();
+
+                const fieldResolvers = [];
+                for (const rootEntity of rootEntities) {
+                    console.log("rootEntity ", rootEntity);
+                    fieldResolvers.push(createDependenciesFieldResolver({ Entity: rootEntity }));
+                }
+
+                console.log("fieldResolvers ", fieldResolvers);
+
+                return fieldResolvers;
+            },
+            inject: [DiscoverService],
+        };
+
+        const rootEntities = discoverService.discoverRootEntities();
+
+        const fieldResolvers = [];
+        for (const rootEntity of rootEntities) {
+            console.log("rootEntity ", rootEntity);
+            fieldResolvers.push(createDependenciesFieldResolver({ Entity: rootEntity }));
+        }
+
         return {
             module: BlocksModule,
             imports: options.imports ?? [],
@@ -45,6 +73,7 @@ export class BlocksModule {
                 transformerDependenciesProvider,
                 BlocksTransformerService,
                 BlocksMetaService,
+                ...fieldResolvers,
                 ...(!options.withoutIndex ? [DiscoverService, BlockIndexService, CommandsService, BlockMigrateService] : []),
             ],
             exports: [BlocksTransformerService, ...(!options.withoutIndex ? [BlockIndexService] : [])],

@@ -205,7 +205,6 @@ type Page implements DocumentInterface {
   content: PageContentBlockData!
   seo: SeoBlockData!
   createdAt: DateTime!
-  dependencies: [BlockIndexDependency!]!
   pageTreeNode: PageTreeNode
 }
 

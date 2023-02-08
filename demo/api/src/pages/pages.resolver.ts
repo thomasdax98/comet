@@ -1,5 +1,4 @@
 import {
-    BlockIndexDependency,
     BlockIndexService,
     OffsetBasedPaginationArgs,
     PageTreeNodeInterface,
@@ -18,7 +17,7 @@ import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";
 
 import { PageInput } from "./dto/page.input";
 import { PaginatedPages } from "./dto/paginated-pages";
-import { Page, PAGE_BLOCK_INDEX_IDENTIFIER } from "./entities/page.entity";
+import { Page } from "./entities/page.entity";
 
 @ArgsType()
 export class PagesArgs extends IntersectionType(OffsetBasedPaginationArgs, SortArgs) {}
@@ -43,10 +42,10 @@ export class PagesResolver {
         return new PaginatedPages(pages, totalCount);
     }
 
-    @ResolveField(() => [BlockIndexDependency])
-    async dependencies(@Parent() page: Page): Promise<BlockIndexDependency[]> {
-        return this.blockIndexService.getDependenciesByRootIdentifierAndRootId(PAGE_BLOCK_INDEX_IDENTIFIER, page.id);
-    }
+    // @ResolveField(() => [BlockIndexDependency])
+    // async dependencies(@Parent() page: Page): Promise<BlockIndexDependency[]> {
+    //     return this.blockIndexService.getDependenciesByRootIdentifierAndRootId(PAGE_BLOCK_INDEX_IDENTIFIER, page.id);
+    // }
 
     @ResolveField(() => PageTreeNode, { nullable: true })
     async pageTreeNode(@Parent() page: Page): Promise<PageTreeNodeInterface | null> {

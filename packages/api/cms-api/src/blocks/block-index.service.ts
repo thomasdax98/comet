@@ -84,9 +84,23 @@ export class BlockIndexService {
         ]);
     }
 
+    async getDependentsByEntityNameAndTargetId(entityName: string, targetId: string): Promise<BlockIndexDependency[]> {
+        return this.connection.execute(`SELECT * FROM block_index_dependencies as idx WHERE idx."entityName" = ? AND idx."targetId" = ?`, [
+            entityName,
+            targetId,
+        ]);
+    }
+
     async getDependenciesByRootIdentifierAndRootId(rootIdentifier: string, rootId: string): Promise<BlockIndexDependency[]> {
         return this.connection.execute(`SELECT * FROM block_index_dependencies as idx WHERE idx."rootIdentifier" = ? AND idx."id" = ?`, [
             rootIdentifier,
+            rootId,
+        ]);
+    }
+
+    async getDependenciesByEntityNameAndRootId(entityName: string, rootId: string): Promise<BlockIndexDependency[]> {
+        return this.connection.execute(`SELECT * FROM block_index_dependencies as idx WHERE idx."entityName" = ? AND idx."id" = ?`, [
+            entityName,
             rootId,
         ]);
     }

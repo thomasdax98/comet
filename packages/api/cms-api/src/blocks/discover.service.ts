@@ -38,6 +38,23 @@ export class DiscoverService {
         this.objectTypesMetadata = TypeMetadataStorage.getObjectTypesMetadata();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    discoverRootEntities(): EntityClass<any>[] {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ret: EntityClass<any>[] = [];
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const entities = this.orm.config.get("entities") as EntityClass<any>[];
+
+        entities.forEach((entity) => {
+            const blockIndexRootIdentifier = Reflect.getMetadata(`data:blockIndexRootIdentifier`, entity);
+            if (blockIndexRootIdentifier) {
+                ret.push(entity);
+            }
+        });
+        return ret;
+    }
+
     discoverRootBlocks(): DiscoverRootBlocksResult[] {
         const ret: DiscoverRootBlocksResult[] = [];
 
