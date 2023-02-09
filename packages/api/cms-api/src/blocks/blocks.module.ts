@@ -1,6 +1,10 @@
-import { DynamicModule, Global, Module, ModuleMetadata, Provider } from "@nestjs/common";
-import * as console from "console";
+import { DynamicModule, Global, Module, ModuleMetadata } from "@nestjs/common";
+import { createUnionType, Union } from "@nestjs/graphql";
 
+// import { Page } from "comet-demo-api/src/pages/entities/page.entity";
+// import { Page } from "../../../../../demo/api/src/pages/entities/page.entity";
+import { File } from "../dam/files/entities/file.entity";
+import { Folder } from "../dam/files/entities/folder.entity";
 import { BlockIndexService } from "./block-index.service";
 import { BlockMigrateService } from "./block-migrate.service";
 import { BLOCKS_MODULE_OPTIONS, BLOCKS_MODULE_TRANSFORMER_DEPENDENCIES } from "./blocks.constants";
@@ -39,30 +43,18 @@ export class BlocksModule {
             inject: [BLOCKS_MODULE_OPTIONS],
         };
 
-        const dependencyProviders: Provider = {
-            provide: "DependencyProviders",
-            useFactory: (discoverService: DiscoverService) => {
-                const rootEntities = discoverService.discoverRootEntities();
+        // const rootEntities = discoverService.discoverRootEntities();
 
-                const fieldResolvers = [];
-                for (const rootEntity of rootEntities) {
-                    console.log("rootEntity ", rootEntity);
-                    fieldResolvers.push(createDependenciesFieldResolver({ Entity: rootEntity }));
-                }
+        const rootEntities = [File, Folder];
 
-                console.log("fieldResolvers ", fieldResolvers);
-
-                return fieldResolvers;
-            },
-            inject: [DiscoverService],
-        };
-
-        const rootEntities = discoverService.discoverRootEntities();
+        const RootEntityUnion: Union<unknown[]> = createUnionType({
+            name: "RootEntityUnion",
+            types: () => rootEntities,
+        });
 
         const fieldResolvers = [];
         for (const rootEntity of rootEntities) {
-            console.log("rootEntity ", rootEntity);
-            fieldResolvers.push(createDependenciesFieldResolver({ Entity: rootEntity }));
+            fieldResolvers.push(createDependenciesFieldResolver({ Entity: rootEntity, RootEntityUnion }));
         }
 
         return {
