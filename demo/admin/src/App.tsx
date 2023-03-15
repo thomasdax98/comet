@@ -29,6 +29,7 @@ import { additionalPageTreeNodeFieldsFragment, EditPageNode } from "@src/common/
 import MasterHeader from "@src/common/MasterHeader";
 import MasterMenu from "@src/common/MasterMenu";
 import { createConfig } from "@src/config";
+import { getPageDependencyInfo } from "@src/dam/getPageDependencyInfo";
 import Dashboard from "@src/dashboard/Dashboard";
 import { PredefinedPage } from "@src/predefinedPage/PredefinedPage";
 import theme from "@src/theme";
@@ -99,7 +100,16 @@ class App extends React.Component {
                         resolveSiteConfigForScope: (configs: Record<string, SiteConfig>, scope: ContentScope) => configs[scope.domain],
                     }}
                 >
-                    <DamConfigProvider value={{ scopeParts: ["domain"] }}>
+                    <DamConfigProvider
+                        value={{
+                            scopeParts: ["domain"],
+                            dependencyRenderInfoProvider: {
+                                Page: {
+                                    getRenderInfo: getPageDependencyInfo,
+                                },
+                            },
+                        }}
+                    >
                         <IntlProvider locale="en" messages={getMessages()}>
                             <LocaleProvider resolveLocaleForScope={(scope: ContentScope) => scope.domain}>
                                 <MuiThemeProvider theme={theme}>
