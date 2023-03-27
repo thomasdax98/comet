@@ -17,9 +17,14 @@ function Story() {
                     <Button onClick={() => api.activatePage("page2", "foo")}>To page 2</Button>
                 </StackPage>
                 <StackPage name="page2">
-                    <StackPageTitle title={<Typography color="secondary">Page 2</Typography>}>
-                        <Typography variant="h2">Page 2</Typography>
-                    </StackPageTitle>
+                    {(id) => {
+                        return (
+                            <StackPageTitle title={<Typography color="secondary">Page 2</Typography>}>
+                                <Typography variant="h2">Page 2</Typography>
+                                <Typography>ID: {id}</Typography>
+                            </StackPageTitle>
+                        );
+                    }}
                 </StackPage>
             </StackSwitch>
         </Stack>
