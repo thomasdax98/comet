@@ -1,9 +1,10 @@
 import * as History from "history";
 import * as React from "react";
-import { Prompt } from "react-router";
+import { matchPath, Prompt } from "react-router";
 
 import { PromptAction, RouterConfirmationDialog } from "./ConfirmationDialog";
 import { RouterContext } from "./Context";
+import { PromptContextRoute } from "./Prompt";
 
 interface PromptHandlerState {
     showConfirmationDialog: boolean;
@@ -39,11 +40,21 @@ function InnerPromptHandler({
         };
 
     const promptMessage = (location: History.Location, action: History.Action): boolean | string => {
-        for (const id of Object.keys(registeredMessages.current)) {
-            const path = registeredMessages.current[id].path;
-            // allow transition if location is below path where prompt was rendered
-            if (!(path && location.pathname.startsWith(path))) {
-                const message = registeredMessages.current[id].message(location, action);
+        for (const registeredMessage of Object.values(registeredMessages.current)) {
+            console.log("********************* prompt message", registeredMessages.current);
+            let ignoreNestedPrompt = false;
+            if (registeredMessage.subRoutes) {
+                for (const subRoute of registeredMessage.subRoutes) {
+                    const m = matchPath(location.pathname, subRoute);
+                    console.log(m, location.pathname, subRoute);
+                    if (m) {
+                        ignoreNestedPrompt = true;
+                        console.log("it's ignoreNestedPrompt! ignore Prompt");
+                    }
+                }
+            }
+            if (!ignoreNestedPrompt) {
+                const message = registeredMessage.message(location, action);
                 if (message !== true) {
                     return message;
                 }
@@ -87,6 +98,7 @@ interface PromptMessages {
     [id: string]: {
         message: (location: History.Location, action: History.Action) => boolean | string;
         path?: string;
+        subRoutes?: PromptContextRoute[];
     };
 }
 interface Props {
@@ -109,13 +121,15 @@ export const RouterPromptHandler: React.FunctionComponent<Props> = ({ children, 
         path,
         message,
         saveAction,
+        subRoutes,
     }: {
         id: string;
         path?: string;
         message: (location: History.Location, action: History.Action) => string | boolean;
-        saveAction: SaveAction;
+        saveAction?: SaveAction;
+        subRoutes?: PromptContextRoute[];
     }) => {
-        registeredMessages.current[id] = { message, path };
+        registeredMessages.current[id] = { message, path, subRoutes };
         if (saveAction) {
             saveActions.current[id] = saveAction;
         }

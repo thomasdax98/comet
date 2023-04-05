@@ -1,8 +1,9 @@
 import { ComponentsOverrides, Tab as MuiTab, TabProps as MuiTabProps, Tabs, TabsProps, Theme } from "@mui/material";
 import { WithStyles, withStyles } from "@mui/styles";
 import * as React from "react";
-import { Route, RouteComponentProps, withRouter } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 
+import { RouterRoute } from "../router/Route";
 import { useStackApi } from "../stack/Api";
 import { StackBreadcrumb } from "../stack/Breadcrumb";
 import { useStackSwitchApi } from "../stack/Switch";
@@ -87,7 +88,7 @@ function RouterTabsComponent({
     return (
         <div className={classes.root}>
             {shouldShowTabBar && (
-                <Route path={deduplicateSlashesInUrl(`${match.url}/:tab`)}>
+                <RouterRoute path={deduplicateSlashesInUrl(`${match.url}/:tab`)}>
                     {({ match }) => {
                         const routePath = match ? `/${match.params.tab}` : "";
                         const value = paths.includes(routePath) ? paths.indexOf(routePath) : defaultPathIndex;
@@ -103,11 +104,11 @@ function RouterTabsComponent({
                             </Tabs>
                         );
                     }}
-                </Route>
+                </RouterRoute>
             )}
             {React.Children.map(rearrangedChildren, (child) => {
                 return React.isValidElement<TabProps>(child) ? (
-                    <Route path={deduplicateSlashesInUrl(`${match.url}/${child.props.path}`)}>
+                    <RouterRoute path={deduplicateSlashesInUrl(`${match.url}/${child.props.path}`)}>
                         {({ match }) => {
                             if (match && stackApi && stackSwitchApi && !foundFirstMatch) {
                                 foundFirstMatch = true;
@@ -129,7 +130,7 @@ function RouterTabsComponent({
                                 return null;
                             }
                         }}
-                    </Route>
+                    </RouterRoute>
                 ) : null;
             })}
         </div>

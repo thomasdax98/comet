@@ -1,12 +1,13 @@
 import * as React from "react";
-import { Route, RouteProps } from "react-router";
+import { RouteProps } from "react-router";
 
+import { RouterRoute } from "../../router/Route";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 const RouteWithErrorBoundary: React.FunctionComponent<RouteProps> = (props) => {
     return (
         <ErrorBoundary key={JSON.stringify(props.path)}>
-            <Route {...props} />
+            <RouterRoute {...props} />
         </ErrorBoundary>
     );
 };

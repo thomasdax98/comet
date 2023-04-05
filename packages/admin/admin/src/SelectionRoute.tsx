@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Route, useHistory, useRouteMatch } from "react-router";
+import { useHistory, useRouteMatch } from "react-router";
 
+import { RouterRoute } from "./router/Route";
 import { ISelectionApi } from "./SelectionApi";
 
 interface IRouteParams {
@@ -72,7 +73,7 @@ export interface ISelectionRouterRenderPropArgs {
 interface IProps {}
 export const SelectionRouteInner: React.FunctionComponent<IProps> = ({ children }) => {
     const { path } = useRouteMatch();
-    return <Route path={`${path}/:id`}>{() => <>{children}</>}</Route>;
+    return <RouterRoute path={`${path}/:id`}>{() => <>{children}</>}</RouterRoute>;
 };
 
 interface ISelectionRouteHooklessProps extends IProps {

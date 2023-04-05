@@ -141,23 +141,24 @@ export function FinalForm<FormValues = AnyObject>(props: IProps<FormValues>) {
                         return true;
                     }}
                     // TODO DirtyHandler removal: do we need a resetAction functionality here?
-                />
-                <form onSubmit={submit}>
-                    <div>
-                        {renderComponent<FormValues>(
-                            {
-                                children: props.children,
-                                component: props.component,
-                                render: props.render,
-                            },
-                            formRenderProps,
+                >
+                    <form onSubmit={submit}>
+                        <div>
+                            {renderComponent<FormValues>(
+                                {
+                                    children: props.children,
+                                    component: props.component,
+                                    render: props.render,
+                                },
+                                formRenderProps,
+                            )}
+                        </div>
+                        {(formRenderProps.submitError || formRenderProps.error) && (
+                            <div className="error">{formRenderProps.submitError || formRenderProps.error}</div>
                         )}
-                    </div>
-                    {(formRenderProps.submitError || formRenderProps.error) && (
-                        <div className="error">{formRenderProps.submitError || formRenderProps.error}</div>
-                    )}
-                    {!editDialog && <>{formRenderProps.submitting && <CircularProgress />}</>}
-                </form>
+                        {!editDialog && <>{formRenderProps.submitting && <CircularProgress />}</>}
+                    </form>
+                </RouterPrompt>
             </FinalFormContextProvider>
         );
     }

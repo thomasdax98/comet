@@ -7,6 +7,20 @@ import { v4 as uuid } from "uuid";
 import { RouterContext } from "./Context";
 import { SaveAction } from "./PromptHandler";
 
+export interface PromptContextRoute {
+    id: string;
+    path?: string | readonly string[] | undefined;
+    exact?: boolean | undefined;
+    sensitive?: boolean | undefined;
+    strict?: boolean | undefined;
+}
+interface PromptContext {
+    registerRoute: (options: PromptContextRoute) => void;
+    unregisterRoute: (id: string) => void;
+}
+
+export const PromptContext = React.createContext<PromptContext | undefined>(undefined);
+
 // react-router Prompt doesn't support multiple Prompts, this one does
 interface IProps {
     /**
@@ -16,23 +30,40 @@ interface IProps {
     message: (location: History.Location, action: History.Action) => boolean | string;
     saveAction?: SaveAction;
 }
-export const RouterPrompt: React.FunctionComponent<IProps> = ({ message, saveAction }) => {
+export const RouterPrompt: React.FunctionComponent<IProps> = ({ children, message, saveAction }) => {
     const id = useConstant<string>(() => uuid());
     const reactRouterContext = React.useContext(__RouterContext); // reactRouterContext can be undefined if no router is used, don't fail in that case
     const path: string | undefined = reactRouterContext?.match.path;
-    const context = React.useContext(RouterContext);
+    const routerContext = React.useContext(RouterContext);
+    const subRoutes = React.useRef<PromptContextRoute[]>([]);
     React.useEffect(() => {
-        if (context) {
-            context.register({ id, message, saveAction, path });
+        if (routerContext) {
+            routerContext.register({ id, message, saveAction, path, subRoutes: subRoutes.current });
         } else {
             console.error("Can't register RouterPrompt, missing <RouterPromptHandler>");
         }
         return function cleanup() {
-            if (context) {
-                context.unregister(id);
+            if (routerContext) {
+                routerContext.unregister(id);
             }
         };
     });
 
-    return null;
+    return (
+        <PromptContext.Provider
+            value={{
+                registerRoute: (route) => {
+                    subRoutes.current = [...subRoutes.current.filter((r) => r.id != route.id), route];
+                },
+                unregisterRoute: (id) => {
+                    subRoutes.current = subRoutes.current.filter((r) => r.id != id);
+                },
+            }}
+        >
+            <div style={{ border: "1px solid red" }}>
+                {JSON.stringify(subRoutes.current)}
+                {children}
+            </div>
+        </PromptContext.Provider>
+    );
 };

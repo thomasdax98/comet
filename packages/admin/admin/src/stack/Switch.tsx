@@ -1,7 +1,9 @@
+/* eslint-disable @calm/react-intl/missing-formatted-message */
 import * as React from "react";
-import { Route, RouteComponentProps, Switch, useHistory, useRouteMatch } from "react-router";
+import { RouteComponentProps, useHistory, useRouteMatch } from "react-router";
 import { v4 as uuid } from "uuid";
 
+import { RouterRoute } from "../router/Route";
 import { StackBreadcrumb } from "./Breadcrumb";
 import { IStackPageProps } from "./Page";
 import { StackSwitchMeta } from "./SwitchMeta";
@@ -169,23 +171,28 @@ const StackSwitchInner: React.RefForwardingComponent<IStackSwitchApi, IProps & I
 
     if (!match) return null;
 
+    let routeMatched = false;
     return (
-        <Switch>
+        <>
             {React.Children.map(props.children, (page: React.ReactElement<IStackPageProps>) => {
                 if (isInitialPage(page.props.name)) return null; // don't render initial Page
                 const path = `${removeTrailingSlash(match.url)}/:id/${page.props.name}`;
                 return (
-                    <Route path={path}>
+                    <RouterRoute path={path}>
                         {(routeProps: RouteComponentProps<IRouteParams>) => {
                             if (!routeProps.match) return null;
+                            routeMatched = true;
                             return renderRoute(page, routeProps);
                         }}
-                    </Route>
+                    </RouterRoute>
                 );
             })}
-            <Route>
+            <RouterRoute>
                 {(routeProps: RouteComponentProps<IRouteParams>) => {
                     // now render initial page (as last route so it's a fallback)
+                    if (routeMatched) {
+                        return null;
+                    }
                     let initialPage: React.ReactElement<IStackPageProps> | null = null;
                     React.Children.forEach(props.children, (page: React.ReactElement<IStackPageProps>) => {
                         if (isInitialPage(page.props.name)) {
@@ -194,8 +201,8 @@ const StackSwitchInner: React.RefForwardingComponent<IStackSwitchApi, IProps & I
                     });
                     return renderRoute(initialPage!, routeProps);
                 }}
-            </Route>
-        </Switch>
+            </RouterRoute>
+        </>
     );
 };
 const StackSwitchWithRef = React.forwardRef(StackSwitchInner);
