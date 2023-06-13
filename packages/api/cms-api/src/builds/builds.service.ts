@@ -132,9 +132,9 @@ export class BuildsService {
         return autoBuildStatus;
     }
 
-    async setChangesSinceLastBuild(): Promise<void> {
-        if ((await this.changesRepository.count()) < 1) {
-            await this.changesRepository.persistAndFlush(this.changesRepository.create({}));
+    async setChangesSinceLastBuild(scope: unknown = "all"): Promise<void> {
+        if ((await this.changesRepository.findOne({ scope })) === null) {
+            await this.changesRepository.persistAndFlush(this.changesRepository.create({ scope }));
         }
     }
 
@@ -144,5 +144,13 @@ export class BuildsService {
 
     async deleteChangesSinceLastBuild(): Promise<void> {
         await this.changesRepository.createQueryBuilder().truncate().execute();
+    }
+
+    async shouldRebuildAllScopes(): Promise<boolean> {
+        return (await this.changesRepository.findOne({ scope: "all" })) !== null;
+    }
+
+    async getScopesWithChanges(): Promise<Record<string, unknown>[]> {
+        return (await this.changesRepository.find({ scope: { $ne: "all" } })).map((change) => change.scope) as Record<string, unknown>[];
     }
 }

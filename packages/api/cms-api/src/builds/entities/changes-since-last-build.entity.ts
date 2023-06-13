@@ -12,4 +12,7 @@ export class ChangesSinceLastBuild extends BaseEntity<ChangesSinceLastBuild, "id
         columnType: "timestamp with time zone",
     })
     createdAt: Date = new Date();
+
+    @Property({ type: "json" })
+    scope: "all" | Record<string, unknown>;
 }

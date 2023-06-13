@@ -54,8 +54,8 @@ export class AppModule {
                     driver: ApolloDriver,
                     imports: [BlocksModule],
                     useFactory: (dependencies: Record<string, unknown>) => ({
-                        debug: config.debug,
                         playground: config.debug,
+                        debug: config.debug,
                         autoSchemaFile: "schema.gql",
                         sortSchema: true,
                         context: ({ req }: { req: Request }) => ({ ...req }),
@@ -96,9 +96,9 @@ export class AppModule {
                 LinksModule,
                 PagesModule,
                 PageTreeModule.forRoot({
-                    PageTreeNode: PageTreeNode,
                     PageTreeNodeCreateInput: PageTreeNodeCreateInput,
                     PageTreeNodeUpdateInput: PageTreeNodeUpdateInput,
+                    PageTreeNode: PageTreeNode,
                     Documents: [Page, Link, PredefinedPage],
                     Scope: PageTreeNodeScope,
                     reservedPaths: ["/events"],

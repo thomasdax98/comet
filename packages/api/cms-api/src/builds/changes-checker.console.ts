@@ -21,8 +21,15 @@ export class ChangesCheckerConsole {
         console.log("Checking if changes since last build occurred...");
 
         if (await this.buildsService.hasChangesSinceLastBuild()) {
-            console.log("Changes detected, starting build...");
-            await this.buildsService.createBuildsForAllScopes("changesDetected");
+            if (await this.buildsService.shouldRebuildAllScopes()) {
+                console.log("Changes detected, starting build...");
+                await this.buildsService.createBuildsForAllScopes("changesDetected");
+            } else {
+                const scopesWithChanges = await this.buildsService.getScopesWithChanges();
+                console.log(scopesWithChanges);
+                return;
+            }
+
             console.log("Build successfully started, resetting changesSinceLastBuild...");
             await this.buildsService.deleteChangesSinceLastBuild();
             console.log("Resetting changesSinceLastBuild successful!");
