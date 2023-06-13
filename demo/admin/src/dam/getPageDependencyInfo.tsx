@@ -1,6 +1,6 @@
 import { GetRenderInfo } from "@comet/cms-admin";
-import { GQLPageDependencyQuery, GQLPageDependencyQueryVariables } from "@src/graphql.generated";
 import { Page } from "@src/pages/Page";
+import { GQLPageDependencyQuery, GQLPageDependencyQueryVariables } from "@src/pages/Page.generated";
 
 export const getPageDependencyInfo: GetRenderInfo = async (id: string, { apolloClient, contentScopeUrl, data: dependencyData }) => {
     const { data } = await apolloClient.query<GQLPageDependencyQuery, GQLPageDependencyQueryVariables>({
