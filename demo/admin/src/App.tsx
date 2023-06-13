@@ -15,7 +15,7 @@ import {
     CronJobsPage,
     DamConfigProvider,
     DamPage,
-    DependencyProvider,
+    DependenciesConfigProvider,
     LocaleProvider,
     PagesPage,
     PublisherPage,
@@ -102,7 +102,7 @@ class App extends React.Component {
                     }}
                 >
                     <DamConfigProvider value={{ scopeParts: ["domain"] }}>
-                        <DependencyProvider
+                        <DependenciesConfigProvider
                             value={{
                                 dependencyRenderInfoProvider: {
                                     Page: getPageDependencyInfo,
@@ -251,7 +251,7 @@ class App extends React.Component {
                                     </MuiThemeProvider>
                                 </LocaleProvider>
                             </IntlProvider>
-                        </DependencyProvider>
+                        </DependenciesConfigProvider>
                     </DamConfigProvider>
                 </SitesConfigProvider>
             </ApolloProvider>

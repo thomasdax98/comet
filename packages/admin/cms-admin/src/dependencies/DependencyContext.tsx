@@ -17,19 +17,19 @@ export interface DependencyRenderInfo {
 
 export type GetRenderInfo = (id: string, options: DependencyRenderInfoOptions) => Promise<DependencyRenderInfo> | DependencyRenderInfo;
 
-export interface DependencyConfig {
+export interface DependenciesConfig {
     dependencyRenderInfoProvider?: {
         [key: string]: GetRenderInfo;
     };
 }
 
-const DependencyContext = React.createContext<DependencyConfig | undefined>(undefined);
+const DependenciesConfigContext = React.createContext<DependenciesConfig | undefined>(undefined);
 
-export const DependencyProvider: React.FunctionComponent<{ value: DependencyConfig }> = ({ children, value }) => {
-    return <DependencyContext.Provider value={value}>{children}</DependencyContext.Provider>;
+export const DependenciesConfigProvider: React.FunctionComponent<{ value: DependenciesConfig }> = ({ children, value }) => {
+    return <DependenciesConfigContext.Provider value={value}>{children}</DependenciesConfigContext.Provider>;
 };
 
-export const useDependencyConfig = (): DependencyConfig => {
-    const context = React.useContext(DependencyContext);
+export const useDependenciesConfig = (): DependenciesConfig => {
+    const context = React.useContext(DependenciesConfigContext);
     return context ?? {};
 };

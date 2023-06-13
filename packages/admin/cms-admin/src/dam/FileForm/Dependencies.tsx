@@ -7,7 +7,7 @@ import { FormattedMessage } from "react-intl";
 import { Link } from "react-router-dom";
 
 import { useContentScope } from "../../contentScope/Provider";
-import { DependencyRenderInfo, GetRenderInfo, useDependencyConfig } from "../../dependencies/DependencyContext";
+import { DependencyRenderInfo, GetRenderInfo, useDependenciesConfig } from "../../dependencies/DependencyContext";
 import { GQLDamFileDependentsQuery, GQLDamFileDependentsQueryVariables, GQLDamFileDetailDependencyFragment } from "./Dependencies.generated";
 
 interface DependencyProps {
@@ -130,7 +130,7 @@ interface DependenciesProps {
 
 export const Dependencies = ({ fileId }: DependenciesProps) => {
     const classes = useStyles();
-    const dependencyConfig = useDependencyConfig();
+    const dependencyConfig = useDependenciesConfig();
 
     const { data, loading, refetch } = useQuery<GQLDamFileDependentsQuery, GQLDamFileDependentsQueryVariables>(damFileDependentsQuery, {
         variables: {
