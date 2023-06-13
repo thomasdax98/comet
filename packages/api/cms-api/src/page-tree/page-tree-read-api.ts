@@ -365,8 +365,11 @@ export function createReadApi(
         },
 
         async getFirstNodeByAttachedPageId(pageId: string): Promise<PageTreeNodeInterface | null> {
+            console.log("getFirstNodeByAttachedPageId");
             const attachedDocument = await attachedDocumentsRepository.findOne({ documentId: pageId });
+            console.log("document ", attachedDocument);
             if (!attachedDocument) return null;
+            console.log("pageTreeNode ", await this.getNode(attachedDocument.pageTreeNodeId));
             return this.getNode(attachedDocument.pageTreeNodeId);
         },
 
