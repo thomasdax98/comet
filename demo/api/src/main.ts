@@ -2,7 +2,7 @@ if (process.env.TRACING_ENABLED) {
     require("./tracing");
 }
 
-import { ExceptionInterceptor, ValidationExceptionFactory } from "@comet/cms-api";
+import { BlockWithoutHeaderGuard, ExceptionInterceptor, ValidationExceptionFactory } from "@comet/cms-api";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
@@ -40,6 +40,11 @@ async function bootstrap(): Promise<void> {
 
     app.use(compression());
     app.use(cookieParser());
+
+    // if cdn is enabled, make sure all traffic is coming from the cdn
+    if (config.cdn.enabled) {
+        app.useGlobalGuards(new BlockWithoutHeaderGuard({ headerName: "x-cdn-origin-check", headerValue: config.cdn.originCheck }));
+    }
 
     const port = config.apiPort;
     await app.listen(port);

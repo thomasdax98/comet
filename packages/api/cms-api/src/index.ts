@@ -56,6 +56,7 @@ export { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "./common/filter/m
 export { NumberFilter } from "./common/filter/number.filter";
 export { StringFilter } from "./common/filter/string.filter";
 export { extractGraphqlFields } from "./common/graphql/extract-graphql-fields";
+export { BlockWithoutHeaderGuard } from "./common/guards/block-without-header.guard";
 export { OffsetBasedPaginationArgs } from "./common/pagination/offset-based.args";
 export { PaginatedResponseFactory } from "./common/pagination/paginated-response.factory";
 export { SortArgs } from "./common/sorting/sort.args";
