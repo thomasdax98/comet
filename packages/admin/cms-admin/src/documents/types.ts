@@ -1,4 +1,5 @@
 import { TypedDocumentNode } from "@apollo/client";
+import { OperationVariables } from "@apollo/client/core";
 import { SvgIconProps } from "@mui/material";
 import * as React from "react";
 
@@ -49,14 +50,10 @@ export interface DocumentInterface<
     anchors: (input: DocumentInput) => string[];
 }
 
-export interface DependencyInterface<
-    GQLQuery = { [key: string]: unknown },
-    GQLQueryVariables = { [key: string]: unknown },
-    Data = GQLQuery | { [key: string]: unknown },
-> {
+export interface DependencyInterface<GQLQuery = Record<string, unknown>, GQLQueryVariables = OperationVariables> {
     displayName: React.ReactNode;
     dependencyQuery: TypedDocumentNode<GQLQuery, GQLQueryVariables>;
-    getName: (data: Data) => React.ReactNode;
-    getSecondaryInformation?: (data: Data) => React.ReactNode;
-    getUrl: (data: Data, { rootColumn, jsonPath, contentScopeUrl }: { rootColumn: string; jsonPath: string; contentScopeUrl: string }) => string;
+    getName: (data: GQLQuery) => React.ReactNode;
+    getSecondaryInformation?: (data: GQLQuery) => React.ReactNode;
+    getUrl: (data: GQLQuery, { rootColumn, jsonPath, contentScopeUrl }: { rootColumn: string; jsonPath: string; contentScopeUrl: string }) => string;
 }

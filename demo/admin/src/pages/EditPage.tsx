@@ -168,6 +168,7 @@ export const EditPage: React.FC<Props> = ({ id, category }) => {
                         },
                     ]}
                 </BlockPreviewWithTabs>
+                {/*<PageDependencies pageId={pageState.document!.id} />*/}
             </MainContent>
             {dialogs}
         </EditPageLayout>

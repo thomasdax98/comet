@@ -33,14 +33,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-interface DependenciesProps {
+interface DependencyListProps {
     loading: boolean;
     error: ApolloError | undefined;
     refetch: (variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<unknown>>;
-    dependencyItems: Array<Pick<GQLDependency, "rootGraphqlObjectType" | "rootId" | "rootColumnName" | "jsonPath">> | undefined;
+    dependencyItems: Array<Pick<GQLDependency, "rootColumnName" | "jsonPath"> & { id: string; graphqlObjectType: string }> | undefined;
 }
 
-export const Dependencies = ({ loading, error, refetch, dependencyItems }: DependenciesProps) => {
+export const DependencyList = ({ loading, error, refetch, dependencyItems }: DependencyListProps) => {
     const classes = useStyles();
     const dependenciesConfig = useDependenciesConfig();
     const contentScope = useContentScope();
@@ -53,25 +53,25 @@ export const Dependencies = ({ loading, error, refetch, dependencyItems }: Depen
                 </Button>
             </ListItem>
             {dependencyItems?.map((item) => {
-                const DependencyComponent: DependencyComponent | undefined = dependenciesConfig[item.rootGraphqlObjectType]?.DependencyComponent;
+                const DependencyComponent: DependencyComponent | undefined = dependenciesConfig[item.graphqlObjectType]?.DependencyComponent;
 
                 if (DependencyComponent === undefined) {
                     return (
                         <FormattedMessage
-                            key={`${item.rootId}|${item.jsonPath}`}
+                            key={`${item.id}|${item.jsonPath}`}
                             id="comet.dam.dependencies.missingDependencyComponent"
                             defaultMessage="Error: Missing DependencyComponent for type {graphqlObjectType}. ID: {id}."
                             values={{
-                                graphqlObjectType: item.rootGraphqlObjectType,
-                                id: item.rootId,
+                                graphqlObjectType: item.graphqlObjectType,
+                                id: item.id,
                             }}
                         />
                     );
                 }
 
                 return (
-                    <ListItem key={`${item.rootId}|${item.jsonPath}`} className={classes.listItem} divider>
-                        <DependencyComponent id={item.rootId} dependencyData={item} contentScopeUrl={contentScope.match.url} />
+                    <ListItem key={`${item.id}|${item.jsonPath}`} className={classes.listItem} divider>
+                        <DependencyComponent id={item.id} dependencyData={item} contentScopeUrl={contentScope.match.url} />
                     </ListItem>
                 );
             })}

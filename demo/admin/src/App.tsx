@@ -30,8 +30,8 @@ import { additionalPageTreeNodeFieldsFragment, EditPageNode } from "@src/common/
 import MasterHeader from "@src/common/MasterHeader";
 import MasterMenu from "@src/common/MasterMenu";
 import { createConfig } from "@src/config";
-import { PageDependency } from "@src/dam/PageDependency";
 import Dashboard from "@src/dashboard/Dashboard";
+import { PageDependency } from "@src/dependencies/PageDependency";
 import { PredefinedPage } from "@src/predefinedPage/PredefinedPage";
 import theme from "@src/theme";
 import * as React from "react";
