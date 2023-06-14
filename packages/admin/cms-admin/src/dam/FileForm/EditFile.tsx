@@ -29,7 +29,6 @@ import { useContentScope } from "../../contentScope/Provider";
 import { GQLFocalPoint, GQLImageCropAreaInput, GQLLicenseInput } from "../../graphql.generated";
 import { useDamConfig } from "../config/useDamConfig";
 import { LicenseValidityTags } from "../DataGrid/tags/LicenseValidityTags";
-import { Dependencies } from "./Dependencies";
 import Duplicates from "./Duplicates";
 import { damFileDetailQuery, updateDamFileMutation } from "./EditFile.gql";
 import {
@@ -39,6 +38,7 @@ import {
     GQLUpdateFileMutation,
     GQLUpdateFileMutationVariables,
 } from "./EditFile.gql.generated";
+import { FileDependencies } from "./FileDependencies";
 import { FilePreview } from "./FilePreview";
 import { FileSettingsFields, LicenseType } from "./FileSettingsFields";
 import { ImageInfos } from "./ImageInfos";
@@ -287,7 +287,7 @@ const EditFileInner = ({ file, id }: EditFileInnerProps) => {
                                     label={intl.formatMessage({ id: "comet.dam.file.dependencies", defaultMessage: "Dependencies" })}
                                     path="/dependencies"
                                 >
-                                    <Dependencies fileId={file.id} />
+                                    <FileDependencies fileId={file.id} />
                                 </RouterTab>
                             </RouterTabs>
                         </ReactSplit>

@@ -1,34 +1,16 @@
-import { gql, useQuery } from "@apollo/client";
+import { ApolloError } from "@apollo/client";
+import { OperationVariables } from "@apollo/client/core";
+import { ApolloQueryResult } from "@apollo/client/core/types";
 import { BallTriangle as BallTriangleIcon, Reload as ReloadIcon } from "@comet/admin-icons";
 import { Button, List, ListItem, ListItemIcon } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import * as React from "react";
 import { FormattedMessage } from "react-intl";
 
-import { useContentScope } from "../../contentScope/Provider";
-import { useDependenciesConfig } from "../../dependencies/DependenciesConfig";
-import { GQLDamFileDependentsQuery, GQLDamFileDependentsQueryVariables } from "./Dependencies.generated";
-
-export const damFileDetailDependencyFragment = gql`
-    fragment DamFileDetailDependency on Dependency {
-        rootGraphqlObjectType
-        rootId
-        rootColumnName
-        jsonPath
-    }
-`;
-
-const damFileDependentsQuery = gql`
-    query DamFileDependents($id: ID!) {
-        damFile(id: $id) {
-            id
-            dependents {
-                ...DamFileDetailDependency
-            }
-        }
-    }
-    ${damFileDetailDependencyFragment}
-`;
+import { useContentScope } from "../contentScope/Provider";
+import { GQLDependency } from "../graphql.generated";
+import { useDependenciesConfig } from "./DependenciesConfig";
+import { DependencyComponent } from "./Dependency";
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -52,19 +34,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface DependenciesProps {
-    fileId: string;
+    loading: boolean;
+    error: ApolloError | undefined;
+    refetch: (variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<unknown>>;
+    dependencyItems: Array<Pick<GQLDependency, "rootGraphqlObjectType" | "rootId" | "rootColumnName" | "jsonPath">> | undefined;
 }
 
-export const Dependencies = ({ fileId }: DependenciesProps) => {
+export const Dependencies = ({ loading, error, refetch, dependencyItems }: DependenciesProps) => {
     const classes = useStyles();
     const dependenciesConfig = useDependenciesConfig();
     const contentScope = useContentScope();
-
-    const { data, loading, refetch } = useQuery<GQLDamFileDependentsQuery, GQLDamFileDependentsQueryVariables>(damFileDependentsQuery, {
-        variables: {
-            id: fileId,
-        },
-    });
 
     return (
         <List className={classes.list} disablePadding>
@@ -73,25 +52,26 @@ export const Dependencies = ({ fileId }: DependenciesProps) => {
                     <FormattedMessage id="comet.dam.dependencies.refresh" defaultMessage="Refresh" />
                 </Button>
             </ListItem>
-            {data?.damFile.dependents.map((dependent) => {
-                const DependencyComponent = dependenciesConfig[dependent.rootGraphqlObjectType]?.DependencyComponent;
+            {dependencyItems?.map((item) => {
+                const DependencyComponent: DependencyComponent | undefined = dependenciesConfig[item.rootGraphqlObjectType]?.DependencyComponent;
 
                 if (DependencyComponent === undefined) {
                     return (
                         <FormattedMessage
-                            key={`${dependent.rootId}|${dependent.jsonPath}`}
+                            key={`${item.rootId}|${item.jsonPath}`}
                             id="comet.dam.dependencies.missingDependencyComponent"
-                            defaultMessage="Error: Missing DependencyComponent for type {graphqlObjectType}."
+                            defaultMessage="Error: Missing DependencyComponent for type {graphqlObjectType}. ID: {id}."
                             values={{
-                                graphqlObjectType: dependent.rootGraphqlObjectType,
+                                graphqlObjectType: item.rootGraphqlObjectType,
+                                id: item.rootId,
                             }}
                         />
                     );
                 }
 
                 return (
-                    <ListItem key={`${dependent.rootId}|${dependent.jsonPath}`} className={classes.listItem} divider>
-                        <DependencyComponent id={dependent.rootId} dependencyData={dependent} contentScopeUrl={contentScope.match.url} />
+                    <ListItem key={`${item.rootId}|${item.jsonPath}`} className={classes.listItem} divider>
+                        <DependencyComponent id={item.rootId} dependencyData={item} contentScopeUrl={contentScope.match.url} />
                     </ListItem>
                 );
             })}
