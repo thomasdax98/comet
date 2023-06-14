@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { Link as LinkIcon, OpenNewTab as OpenNewTabIcon } from "@comet/admin-icons";
-import { IconButton, ListItemSecondaryAction, ListItemText } from "@mui/material";
+import { CircularProgress, IconButton, ListItemSecondaryAction, ListItemText } from "@mui/material";
 import * as React from "react";
 import { FormattedMessage } from "react-intl";
 import { Link } from "react-router-dom";
@@ -44,8 +44,7 @@ export const Dependency = ({ id, DependencyClass, graphqlVariables, dependencyDa
     }
 
     if (data === undefined || loading) {
-        // TODO: better loading state
-        return <>Loading...</>;
+        return <CircularProgress />;
     }
 
     const url = DependencyClass.getUrl?.(data, { rootColumn: dependencyData.rootColumnName, jsonPath: dependencyData.jsonPath, contentScopeUrl });
