@@ -39,7 +39,9 @@ const File: DependencyInterface<GQLFileDependencyQuery, GQLFileDependencyQueryVa
             folderIds.push(data.damFile.folder.id);
         }
 
-        return `${contentScopeUrl}/assets/${folderIds.map((id) => `${id}/folder`).join("/")}/${data.damFile.id}/edit`;
+        return `${contentScopeUrl}/assets/${folderIds.map((id) => `${id}/folder`).join("/")}${folderIds.length > 0 ? "/" : ""}${
+            data.damFile.id
+        }/edit`;
     },
 };
 
