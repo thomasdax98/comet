@@ -2,7 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import * as React from "react";
 
 import { DependencyList } from "../../dependencies/DependencyList";
-import { GQLDamFileDependentsQuery, GQLDamFileDependentsQueryVariables } from "./FileDependencies.generated";
+import { GQLDamFileDependentsQuery, GQLDamFileDependentsQueryVariables } from "./FileDependents.generated";
 
 const damFileDependentsQuery = gql`
     query DamFileDependents($id: ID!) {
@@ -18,11 +18,11 @@ const damFileDependentsQuery = gql`
     }
 `;
 
-interface DependenciesProps {
+interface FileDependentsProps {
     fileId: string;
 }
 
-export const FileDependencies = ({ fileId }: DependenciesProps) => {
+export const FileDependents = ({ fileId }: FileDependentsProps) => {
     const { data, loading, error, refetch } = useQuery<GQLDamFileDependentsQuery, GQLDamFileDependentsQueryVariables>(damFileDependentsQuery, {
         variables: {
             id: fileId,
