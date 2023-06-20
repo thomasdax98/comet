@@ -16,6 +16,7 @@ import { Button, CircularProgress, IconButton } from "@mui/material";
 import { SeoBlock } from "@src/common/blocks/SeoBlock";
 import { useContentScope } from "@src/common/ContentScopeProvider";
 import { GQLPageTreeNodeCategory } from "@src/graphql.generated";
+import { PageDependencies } from "@src/pages/PageDependencies";
 import * as React from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory, useRouteMatch } from "react-router";
@@ -166,9 +167,17 @@ export const EditPage: React.FC<Props> = ({ id, category }) => {
                             ),
                             content: rootBlocksApi.seo.adminUI,
                         },
+                        {
+                            key: "dependencies",
+                            label: (
+                                <AdminTabLabel isValid={rootBlocksApi.seo.isValid}>
+                                    <FormattedMessage id="pages.pages.page.edit.dependencies" defaultMessage="Dependencies" />
+                                </AdminTabLabel>
+                            ),
+                            content: <PageDependencies pageId={pageState.document?.id} />,
+                        },
                     ]}
                 </BlockPreviewWithTabs>
-                {/*<PageDependencies pageId={pageState.document!.id} />*/}
             </MainContent>
             {dialogs}
         </EditPageLayout>
