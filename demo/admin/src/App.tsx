@@ -103,7 +103,7 @@ class App extends React.Component {
                 >
                     <DamConfigProvider value={{ scopeParts: ["domain"] }}>
                         <DependenciesConfigProvider
-                            rootEntities={{
+                            entities={{
                                 Page: {
                                     DependencyComponent: PageDependency,
                                 },

@@ -3,22 +3,22 @@ import * as React from "react";
 import { FileDependency } from "../dam/FileDependency";
 import { DependencyComponentInterface } from "./Dependency";
 
-export interface DependencyRootEntities {
+export interface DependencyEntities {
     [graphqlObjectType: string]: {
         DependencyComponent: DependencyComponentInterface;
     };
 }
 
-const DependenciesConfigContext = React.createContext<DependencyRootEntities | undefined>(undefined);
+const DependenciesConfigContext = React.createContext<DependencyEntities | undefined>(undefined);
 
-export const DependenciesConfigProvider: React.FunctionComponent<{ rootEntities: DependencyRootEntities }> = ({ children, rootEntities }) => {
+export const DependenciesConfigProvider: React.FunctionComponent<{ entities: DependencyEntities }> = ({ children, entities }) => {
     return (
         <DependenciesConfigContext.Provider
             value={{
                 DamFile: {
                     DependencyComponent: FileDependency,
                 },
-                ...rootEntities,
+                ...entities,
             }}
         >
             {children}
@@ -26,7 +26,7 @@ export const DependenciesConfigProvider: React.FunctionComponent<{ rootEntities:
     );
 };
 
-export const useDependenciesConfig = (): DependencyRootEntities => {
+export const useDependenciesConfig = (): DependencyEntities => {
     const context = React.useContext(DependenciesConfigContext);
     return context ?? {};
 };
