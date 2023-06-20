@@ -4,7 +4,7 @@ import { FileDependency } from "../dam/FileDependency";
 import { DependencyComponent } from "./Dependency";
 
 export interface DependencyRootEntities {
-    [key: string]: {
+    [graphqlObjectType: string]: {
         DependencyComponent: DependencyComponent;
     };
 }
