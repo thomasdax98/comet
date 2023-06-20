@@ -48,28 +48,27 @@ export function Dependency<GQLQuery = Record<string, unknown>, GQLQueryVariables
     });
 
     if (error) {
-        return (
-            <FormattedMessage
-                id="comet.dam.dependency.cannotResolveDependencyError"
-                defaultMessage="Error: Cannot resolve this dependency. Type: {dependencyName}, ID: {id}."
-                values={{
-                    dependencyName: DependencyClass.displayName,
-                    id: id,
-                }}
-            />
-        );
+        return <CantResolveDependencyErrorMessage displayName={DependencyClass.displayName} id={id} />;
     }
 
     if (data === undefined || loading) {
         return <CircularProgress />;
     }
 
-    const url = DependencyClass.getUrl?.(data, { rootColumn: dependencyData.rootColumnName, jsonPath: dependencyData.jsonPath, contentScopeUrl });
+    let name: React.ReactNode, secondaryInformation: React.ReactNode, url: string | undefined;
+
+    try {
+        name = DependencyClass.getName(data);
+        secondaryInformation = DependencyClass.getSecondaryInformation?.(data);
+        url = DependencyClass.getUrl(data, { rootColumn: dependencyData.rootColumnName, jsonPath: dependencyData.jsonPath, contentScopeUrl });
+    } catch {
+        return <CantResolveDependencyErrorMessage displayName={DependencyClass.displayName} id={id} />;
+    }
 
     return (
         <ListItem className={classes.root} divider>
             <ListItemText className={classes.displayNameColumn} primary={DependencyClass.displayName} />
-            <ListItemText primary={DependencyClass.getName(data)} secondary={DependencyClass.getSecondaryInformation?.(data)} />
+            <ListItemText primary={name} secondary={secondaryInformation} />
             {!!url && (
                 <ListItemSecondaryAction>
                     <IconButton component={Link} to={url}>
@@ -83,3 +82,25 @@ export function Dependency<GQLQuery = Record<string, unknown>, GQLQueryVariables
         </ListItem>
     );
 }
+
+interface CantResolveDependencyErrorMessageProps {
+    displayName: React.ReactNode;
+    id: string;
+}
+
+const CantResolveDependencyErrorMessage = ({ displayName, id }: CantResolveDependencyErrorMessageProps) => {
+    const classes = useStyles();
+
+    return (
+        <ListItem className={classes.root} divider>
+            <FormattedMessage
+                id="comet.dam.dependency.cannotResolveDependencyError"
+                defaultMessage="Error: Cannot resolve this dependency. Type: {dependencyName}, ID: {id}."
+                values={{
+                    dependencyName: displayName,
+                    id: id,
+                }}
+            />
+        </ListItem>
+    );
+};
