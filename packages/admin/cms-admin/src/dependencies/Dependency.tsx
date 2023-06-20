@@ -15,7 +15,7 @@ export interface DependencyComponentProps {
     dependencyData: Pick<GQLDependency, "rootColumnName" | "jsonPath">;
     contentScopeUrl: string;
 }
-export type DependencyComponent = (props: DependencyComponentProps) => React.ReactElement<ListItemProps>;
+export type DependencyComponentInterface = (props: DependencyComponentProps) => React.ReactElement<ListItemProps>;
 
 const useStyles = makeStyles((theme) => ({
     root: {

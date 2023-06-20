@@ -1,11 +1,11 @@
 import * as React from "react";
 
 import { FileDependency } from "../dam/FileDependency";
-import { DependencyComponent } from "./Dependency";
+import { DependencyComponentInterface } from "./Dependency";
 
 export interface DependencyRootEntities {
     [graphqlObjectType: string]: {
-        DependencyComponent: DependencyComponent;
+        DependencyComponent: DependencyComponentInterface;
     };
 }
 

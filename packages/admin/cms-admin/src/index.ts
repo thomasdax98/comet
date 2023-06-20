@@ -47,7 +47,7 @@ export { useDamAcceptedMimeTypes } from "./dam/config/useDamAcceptedMimeTypes";
 export { useDamConfig } from "./dam/config/useDamConfig";
 export { DamPage } from "./dam/DamPage";
 export { DependenciesConfigProvider, DependencyRootEntities, useDependenciesConfig } from "./dependencies/DependenciesConfig";
-export { Dependency, DependencyComponent, DependencyComponentProps } from "./dependencies/Dependency";
+export { Dependency, DependencyComponentInterface, DependencyComponentProps } from "./dependencies/Dependency";
 export { DependencyList } from "./dependencies/DependencyList";
 export { rewriteInternalLinks } from "./documents/rewriteInternalLinks";
 export type { DocumentInterface, DocumentType, IdsMap } from "./documents/types";

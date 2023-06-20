@@ -10,7 +10,7 @@ import { FormattedMessage } from "react-intl";
 import { useContentScope } from "../contentScope/Provider";
 import { GQLDependency } from "../graphql.generated";
 import { useDependenciesConfig } from "./DependenciesConfig";
-import { DependencyComponent } from "./Dependency";
+import { DependencyComponentInterface } from "./Dependency";
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -50,7 +50,7 @@ export const DependencyList = ({ loading, error, refetch, dependencyItems }: Dep
                 </Button>
             </ListItem>
             {dependencyItems?.map((item) => {
-                const DependencyComponent: DependencyComponent | undefined = dependenciesConfig[item.graphqlObjectType]?.DependencyComponent;
+                const DependencyComponent: DependencyComponentInterface | undefined = dependenciesConfig[item.graphqlObjectType]?.DependencyComponent;
 
                 if (DependencyComponent === undefined) {
                     return (
