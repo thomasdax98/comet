@@ -16,9 +16,6 @@ const useStyles = makeStyles((theme) => ({
     list: {
         backgroundColor: theme.palette.background.paper,
     },
-    listItem: {
-        minHeight: 61,
-    },
     listItemHeader: {
         display: "flex",
         justifyContent: "flex-end",
@@ -70,9 +67,12 @@ export const DependencyList = ({ loading, error, refetch, dependencyItems }: Dep
                 }
 
                 return (
-                    <ListItem key={`${item.id}|${item.jsonPath}`} className={classes.listItem} divider>
-                        <DependencyComponent id={item.id} dependencyData={item} contentScopeUrl={contentScope.match.url} />
-                    </ListItem>
+                    <DependencyComponent
+                        key={`${item.id}|${item.jsonPath}`}
+                        id={item.id}
+                        dependencyData={item}
+                        contentScopeUrl={contentScope.match.url}
+                    />
                 );
             })}
             {loading && (

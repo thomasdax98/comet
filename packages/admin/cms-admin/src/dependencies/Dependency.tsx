@@ -1,7 +1,8 @@
 import { useQuery } from "@apollo/client";
 import { OperationVariables } from "@apollo/client/core";
 import { Link as LinkIcon, OpenNewTab as OpenNewTabIcon } from "@comet/admin-icons";
-import { CircularProgress, IconButton, ListItemSecondaryAction, ListItemText } from "@mui/material";
+import { CircularProgress, IconButton, ListItem, ListItemProps, ListItemSecondaryAction, ListItemText } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import * as React from "react";
 import { FormattedMessage } from "react-intl";
 import { Link } from "react-router-dom";
@@ -14,7 +15,17 @@ export interface DependencyComponentProps {
     dependencyData: Pick<GQLDependency, "rootColumnName" | "jsonPath">;
     contentScopeUrl: string;
 }
-export type DependencyComponent = (props: DependencyComponentProps) => React.ReactElement;
+export type DependencyComponent = (props: DependencyComponentProps) => React.ReactElement<ListItemProps>;
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        minHeight: 61,
+    },
+    displayNameColumn: {
+        flexGrow: 0,
+        paddingRight: theme.spacing(4),
+    },
+}));
 
 interface DependencyProps<GQLQuery = Record<string, unknown>, GQLQueryVariables = OperationVariables> {
     id: string;
@@ -31,6 +42,7 @@ export function Dependency<GQLQuery = Record<string, unknown>, GQLQueryVariables
     dependencyData,
     contentScopeUrl,
 }: DependencyProps<GQLQuery, GQLQueryVariables>) {
+    const classes = useStyles();
     const { data, error, loading } = useQuery(DependencyClass.dependencyQuery, {
         variables: graphqlVariables,
     });
@@ -55,8 +67,8 @@ export function Dependency<GQLQuery = Record<string, unknown>, GQLQueryVariables
     const url = DependencyClass.getUrl?.(data, { rootColumn: dependencyData.rootColumnName, jsonPath: dependencyData.jsonPath, contentScopeUrl });
 
     return (
-        <>
-            <ListItemText primary={DependencyClass.displayName} />
+        <ListItem className={classes.root} divider>
+            <ListItemText className={classes.displayNameColumn} primary={DependencyClass.displayName} />
             <ListItemText primary={DependencyClass.getName(data)} secondary={DependencyClass.getSecondaryInformation?.(data)} />
             {!!url && (
                 <ListItemSecondaryAction>
@@ -68,6 +80,6 @@ export function Dependency<GQLQuery = Record<string, unknown>, GQLQueryVariables
                     </IconButton>
                 </ListItemSecondaryAction>
             )}
-        </>
+        </ListItem>
     );
 }
