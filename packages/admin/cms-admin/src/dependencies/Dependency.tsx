@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface DependencyProps<GQLQuery = Record<string, unknown>, GQLQueryVariables = OperationVariables> {
     id: string;
-    DependencyClass: DependencyInterface<GQLQuery, GQLQueryVariables>;
+    DependencyObject: DependencyInterface<GQLQuery, GQLQueryVariables>;
     graphqlVariables: GQLQueryVariables;
     dependencyData: Pick<GQLDependency, "rootColumnName" | "jsonPath">;
     contentScopeUrl: string;
@@ -37,18 +37,18 @@ interface DependencyProps<GQLQuery = Record<string, unknown>, GQLQueryVariables 
 
 export function Dependency<GQLQuery = Record<string, unknown>, GQLQueryVariables = OperationVariables>({
     id,
-    DependencyClass,
+    DependencyObject,
     graphqlVariables,
     dependencyData,
     contentScopeUrl,
 }: DependencyProps<GQLQuery, GQLQueryVariables>) {
     const classes = useStyles();
-    const { data, error, loading } = useQuery(DependencyClass.dependencyQuery, {
+    const { data, error, loading } = useQuery(DependencyObject.dependencyQuery, {
         variables: graphqlVariables,
     });
 
     if (error) {
-        return <CantResolveDependencyErrorMessage displayName={DependencyClass.displayName} id={id} />;
+        return <CantResolveDependencyErrorMessage displayName={DependencyObject.displayName} id={id} />;
     }
 
     if (data === undefined || loading) {
@@ -58,16 +58,16 @@ export function Dependency<GQLQuery = Record<string, unknown>, GQLQueryVariables
     let name: React.ReactNode, secondaryInformation: React.ReactNode, url: string | undefined;
 
     try {
-        name = DependencyClass.getName(data);
-        secondaryInformation = DependencyClass.getSecondaryInformation?.(data);
-        url = DependencyClass.getUrl(data, { rootColumn: dependencyData.rootColumnName, jsonPath: dependencyData.jsonPath, contentScopeUrl });
+        name = DependencyObject.getName(data);
+        secondaryInformation = DependencyObject.getSecondaryInformation?.(data);
+        url = DependencyObject.getUrl(data, { rootColumn: dependencyData.rootColumnName, jsonPath: dependencyData.jsonPath, contentScopeUrl });
     } catch {
-        return <CantResolveDependencyErrorMessage displayName={DependencyClass.displayName} id={id} />;
+        return <CantResolveDependencyErrorMessage displayName={DependencyObject.displayName} id={id} />;
     }
 
     return (
         <ListItem className={classes.root} divider>
-            <ListItemText className={classes.displayNameColumn} primary={DependencyClass.displayName} />
+            <ListItemText className={classes.displayNameColumn} primary={DependencyObject.displayName} />
             <ListItemText primary={name} secondary={secondaryInformation} />
             {!!url && (
                 <ListItemSecondaryAction>

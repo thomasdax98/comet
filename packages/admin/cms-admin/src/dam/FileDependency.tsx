@@ -46,5 +46,5 @@ const File: DependencyInterface<GQLFileDependencyQuery, GQLFileDependencyQueryVa
 };
 
 export const FileDependency = ({ id, dependencyData, contentScopeUrl }: DependencyComponentProps) => {
-    return <Dependency id={id} DependencyClass={File} graphqlVariables={{ id }} dependencyData={dependencyData} contentScopeUrl={contentScopeUrl} />;
+    return <Dependency id={id} DependencyObject={File} graphqlVariables={{ id }} dependencyData={dependencyData} contentScopeUrl={contentScopeUrl} />;
 };
