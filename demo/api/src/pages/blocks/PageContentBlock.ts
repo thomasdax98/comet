@@ -1,10 +1,12 @@
 import { BaseBlocksBlockItemData, BaseBlocksBlockItemInput, BlockField, createBlocksBlock, SpaceBlock, YouTubeVideoBlock } from "@comet/blocks-api";
 import { AnchorBlock, DamImageBlock, DamVideoBlock } from "@comet/cms-api";
+import { DebugListBlock } from "@src/common/blocks/debug-list.block";
 import { LinkListBlock } from "@src/common/blocks/link-list.block";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 import { UserGroup } from "@src/user-groups/user-group";
 import { IsEnum } from "class-validator";
 
+import { DebugBlock } from "../../common/blocks/debug.block";
 import { ColumnsBlock } from "./columns.block";
 import { FullWidthImageBlock } from "./full-width-image.block";
 import { HeadlineBlock } from "./headline.block";
@@ -22,6 +24,8 @@ const supportedBlocks = {
     fullWidthImage: FullWidthImageBlock,
     columns: ColumnsBlock,
     anchor: AnchorBlock,
+    debug: DebugBlock,
+    debugList: DebugListBlock,
 };
 
 class BlocksBlockItemData extends BaseBlocksBlockItemData(supportedBlocks) {

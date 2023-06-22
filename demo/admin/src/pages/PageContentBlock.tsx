@@ -2,12 +2,14 @@ import { createBlocksBlock, SpaceBlock, YouTubeVideoBlock } from "@comet/blocks-
 import { AnchorBlock, DamImageBlock, DamVideoBlock } from "@comet/cms-admin";
 import { LinkListBlock } from "@src/common/blocks/LinkListBlock";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
+import { DebugListBlock } from "@src/pages/blocks/DebugListBlock";
 import { userGroupAdditionalItemFields } from "@src/userGroups/userGroupAdditionalItemFields";
 import { UserGroupChip } from "@src/userGroups/UserGroupChip";
 import { UserGroupContextMenuItem } from "@src/userGroups/UserGroupContextMenuItem";
 import * as React from "react";
 
 import { ColumnsBlock } from "./blocks/ColumnsBlock";
+import { DebugBlock } from "./blocks/DebugBlock";
 import { FullWidthImageBlock } from "./blocks/FullWidthImageBlock";
 import { HeadlineBlock } from "./blocks/HeadlineBlock";
 import { TextImageBlock } from "./blocks/TextImageBlock";
@@ -26,6 +28,8 @@ export const PageContentBlock = createBlocksBlock({
         fullWidthImage: FullWidthImageBlock,
         columns: ColumnsBlock,
         anchor: AnchorBlock,
+        debug: DebugBlock,
+        debugList: DebugListBlock,
     },
     additionalItemFields: {
         ...userGroupAdditionalItemFields,

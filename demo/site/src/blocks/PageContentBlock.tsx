@@ -1,11 +1,13 @@
 import { BlocksBlock, PropsWithData, SupportedBlocks } from "@comet/cms-site";
 import { PageContentBlockData } from "@src/blocks.generated";
+import { DebugListBlock } from "@src/blocks/DebugListBlock";
 import * as React from "react";
 
 import { AnchorBlock } from "./AnchorBlock";
 import { ColumnsBlock } from "./ColumnsBlock";
 import { DamImageBlock } from "./DamImageBlock";
 import DamVideoBlock from "./DamVideoBlock";
+import DebugBlock from "./DebugBlock";
 import { FullWidthImageBlock } from "./FullWidthImageBlock";
 import { HeadlineBlock } from "./HeadlineBlock";
 import { LinkListBlock } from "./LinkListBlock";
@@ -26,6 +28,8 @@ const supportedBlocks: SupportedBlocks = {
     fullWidthImage: (props) => <FullWidthImageBlock data={props} />,
     columns: (props) => <ColumnsBlock data={props} />,
     anchor: (props) => <AnchorBlock data={props} />,
+    debug: (props) => <DebugBlock data={props} />,
+    debugList: (props) => <DebugListBlock data={props} />,
 };
 
 export const PageContentBlock: React.FC<PropsWithData<PageContentBlockData>> = ({ data }) => {
