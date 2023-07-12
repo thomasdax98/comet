@@ -1,9 +1,24 @@
 import CodeBlock from "@theme/CodeBlock";
 import type { Props as PlaygroundProps } from "@theme/Playground";
-import React, { PropsWithChildren } from "react";
+import React from "react";
 import { transform } from "sucrase";
 
-export const LiveCodeBlock = ({ children, ...props }: PropsWithChildren<PlaygroundProps>) => {
+interface LiveCodeBlockProps extends PlaygroundProps {
+    path: string;
+}
+
+const importStory = async (name: string) => {
+    const { default: code } = await import(`!!raw-loader!../stories/${name}`);
+    return code;
+};
+
+export const LiveCodeBlock = ({ path, ...props }: LiveCodeBlockProps) => {
+    const [code, setCode] = React.useState("");
+
+    React.useEffect(() => {
+        importStory(path).then(setCode);
+    }, [path]);
+
     return (
         <CodeBlock
             language="tsx"
@@ -15,7 +30,7 @@ export const LiveCodeBlock = ({ children, ...props }: PropsWithChildren<Playgrou
             }}
             {...props}
         >
-            {children}
+            {code}
         </CodeBlock>
     );
 };
