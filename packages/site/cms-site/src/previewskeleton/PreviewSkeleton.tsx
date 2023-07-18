@@ -3,7 +3,7 @@ import * as React from "react";
 import { usePreview } from "../preview/usePreview";
 import * as sc from "./PreviewSkeleton.sc";
 
-interface SkeletonProps {
+type SkeletonProps = React.PropsWithChildren<{
     type?: "bar" | "rows" | "media";
     height?: number;
     hasContent: boolean;
@@ -11,7 +11,7 @@ interface SkeletonProps {
     color?: string;
     title?: React.ReactNode;
     customContainer?: React.ReactNode;
-}
+}>;
 
 const PreviewSkeleton: React.FunctionComponent<SkeletonProps> = ({
     children,

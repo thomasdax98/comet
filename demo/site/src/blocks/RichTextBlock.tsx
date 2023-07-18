@@ -10,7 +10,7 @@ import styled from "styled-components";
 import { LinkBlock } from "./LinkBlock";
 import * as sc from "./RichTextBlock.sc";
 
-const GreenCustomHeader: React.FC = ({ children }) => <h3 style={{ color: "green" }}>{children}</h3>;
+const GreenCustomHeader: React.FunctionComponent<{ children?: React.ReactNode }> = ({ children }) => <h3 style={{ color: "green" }}>{children}</h3>;
 
 export const DefaultStyleLink = styled.a`
     color: ${({ theme }) => theme.colors.primary};

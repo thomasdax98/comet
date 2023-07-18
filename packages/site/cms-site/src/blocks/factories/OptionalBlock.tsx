@@ -1,6 +1,6 @@
 import * as React from "react";
 
-interface Props {
+type Props = React.PropsWithChildren<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     block: (props: any) => React.ReactNode;
     data: {
@@ -8,7 +8,7 @@ interface Props {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         block?: any;
     };
-}
+}>;
 
 export const OptionalBlock: React.FC<Props> = ({ block: blockFunction, data: { visible, block }, children }) => {
     if (!visible || !block) {

@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { SupportedBlocks } from "./types";
 
-interface Props {
+type Props = React.PropsWithChildren<{
     data: {
         block?: {
             type: string;
@@ -11,7 +11,7 @@ interface Props {
         };
     };
     supportedBlocks: SupportedBlocks;
-}
+}>;
 
 export const OneOfBlock: React.FC<Props> = ({ data: { block }, supportedBlocks, children }) => {
     if (!block) {

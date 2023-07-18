@@ -9,9 +9,7 @@ const supportedBlocks: SupportedBlocks = {
     news: ({ children, ...props }) => <NewsLinkBlock data={props}>{children}</NewsLinkBlock>,
 };
 
-interface LinkBlockProps extends PropsWithData<LinkBlockData> {
-    children: React.ReactElement;
-}
+type LinkBlockProps = React.PropsWithChildren<PropsWithData<LinkBlockData>>;
 
 export const LinkBlock = withPreview(
     ({ data, children }: LinkBlockProps) => {

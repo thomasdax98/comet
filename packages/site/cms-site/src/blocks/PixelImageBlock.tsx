@@ -1,4 +1,4 @@
-import NextImage, { ImageProps } from "next/image";
+import NextImage, { ImageProps } from "next/legacy/image";
 import * as React from "react";
 
 import { PixelImageBlockData } from "../blocks.generated";

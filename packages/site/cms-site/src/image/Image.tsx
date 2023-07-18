@@ -1,4 +1,4 @@
-import NextImage, { ImageLoaderProps, ImageProps as NextImageProps } from "next/image";
+import NextImage, { ImageLoaderProps, ImageProps as NextImageProps } from "next/legacy/image";
 import * as React from "react";
 
 // Fallback to 1 / 1 aspect ratio for invalid value format

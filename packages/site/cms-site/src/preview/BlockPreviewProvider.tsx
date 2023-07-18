@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { PreviewContext } from "./PreviewContext";
 
-export const BlockPreviewProvider: React.FunctionComponent = ({ children }) => {
+export const BlockPreviewProvider: React.FunctionComponent<{ children?: React.ReactNode }> = ({ children }) => {
     return (
         <PreviewContext.Provider
             value={{

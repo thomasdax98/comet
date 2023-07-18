@@ -4,11 +4,11 @@ import scrollIntoView from "scroll-into-view-if-needed";
 import { ComponentTitle, Root, Selection } from "./Preview.sc";
 import { useIFrameBridge } from "./useIFrameBridge";
 
-interface PreviewProps {
+type PreviewProps = React.PropsWithChildren<{
     adminRoute: string;
     type: string;
     enabledAutoScrolling?: boolean;
-}
+}>;
 
 export const Preview: React.FunctionComponent<PreviewProps> = ({ adminRoute, type, children, enabledAutoScrolling = true }) => {
     const iFrameBridge = useIFrameBridge();

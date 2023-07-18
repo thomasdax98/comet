@@ -6,9 +6,9 @@ import { createPathToPreviewPath, defaultPreviewPath, parsePreviewParams } from 
 import { sendSitePreviewIFrameMessage } from "./iframebridge/sendSitePreviewIFrameMessage";
 import { SitePreviewIFrameLocationMessage, SitePreviewIFrameMessageType } from "./iframebridge/SitePreviewIFrameMessage";
 
-interface Props {
+type Props = React.PropsWithChildren<{
     previewPath?: string;
-}
+}>;
 
 export const SitePreviewProvider: React.FunctionComponent<Props> = ({ children, previewPath = defaultPreviewPath }) => {
     const router = useRouter();

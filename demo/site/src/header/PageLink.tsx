@@ -40,7 +40,7 @@ function PageLink({ page, children }: Props): JSX.Element | null {
         return <LinkBlock data={page.document.content}>{typeof children === "function" ? children(active) : children}</LinkBlock>;
     } else if (page.documentType === "Page") {
         return (
-            <Link href={page.path} passHref>
+            <Link href={page.path} passHref legacyBehavior>
                 {typeof children === "function" ? children(active) : children}
             </Link>
         );
@@ -52,7 +52,7 @@ function PageLink({ page, children }: Props): JSX.Element | null {
         const type = (page.document as GQLPredefinedPage).type;
 
         return (
-            <Link href={type && predefinedPagePaths[type] ? predefinedPagePaths[type] : ""} passHref>
+            <Link href={type && predefinedPagePaths[type] ? predefinedPagePaths[type] : ""} passHref legacyBehavior>
                 {typeof children === "function" ? children(active) : children}
             </Link>
         );

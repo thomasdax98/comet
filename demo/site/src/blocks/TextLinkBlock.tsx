@@ -6,11 +6,7 @@ import { LinkBlock } from "./LinkBlock";
 
 export const TextLinkBlock = withPreview(
     ({ data: { link, text } }: PropsWithData<DemoTextLinkBlockData>) => {
-        return (
-            <LinkBlock data={link}>
-                <a>{text}</a>
-            </LinkBlock>
-        );
+        return <LinkBlock data={link}>{text}</LinkBlock>;
     },
     { label: "Link" },
 );

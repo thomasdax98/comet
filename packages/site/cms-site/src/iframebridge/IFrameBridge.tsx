@@ -32,7 +32,7 @@ export const IFrameBridgeContext = React.createContext<IFrameBridgeContext>({
     },
 });
 
-export const IFrameBridgeProvider: React.FunctionComponent = ({ children }) => {
+export const IFrameBridgeProvider: React.FunctionComponent<{ children?: React.ReactNode }> = ({ children }) => {
     const [block, setBlock] = React.useState<unknown | undefined>(undefined);
     const [selectedAdminRoute, setSelectedAdminRoute] = React.useState<string | undefined>(undefined);
     const [hoveredAdminRoute, setHoveredAdminRoute] = React.useState<string | undefined>(undefined);
