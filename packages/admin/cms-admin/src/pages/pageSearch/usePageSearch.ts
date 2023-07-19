@@ -110,13 +110,15 @@ const usePageSearch = ({ tree, domain, setExpandedIds, onUpdateCurrentMatch, pag
             inorderPages.forEach((page) => {
                 let match;
 
-                while ((match = regex.exec(page.name)) !== null) {
+                if ((match = regex.exec(page.name)) !== null || (match = regex.exec(page.path)) !== null) {
                     const { id, ancestorIds } = page;
+                    const where = match.input === page.name ? "name" : "path";
                     matches.push({
                         page: { id, ancestorIds },
                         start: match.index,
                         end: match.index + query.length - 1,
                         focused: matches.length === 0,
+                        where,
                     });
                 }
             });
