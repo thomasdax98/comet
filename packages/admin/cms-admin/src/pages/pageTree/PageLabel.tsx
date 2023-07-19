@@ -23,19 +23,21 @@ const PageLabel: React.FunctionComponent<PageLabelProps> = ({ page, disabled, on
             <PageTypeIcon page={page} disabled={disabled} />
             <LinkContent>
                 <LinkText color={page.visibility === "Unpublished" || disabled ? "textSecondary" : "textPrimary"}>
-                    <MarkedMatches text={page.name} matches={page.matches} />
+                    <MarkedMatches text={page.name} matches={page.matches} isPathMatch />
                 </LinkText>
-                {page.visibility === "Archived" && (
-                    <ArchivedChip
-                        component="span"
-                        label={<FormattedMessage id="comet.pages.pages.archived" defaultMessage="Archived" />}
-                        color="primary"
-                        clickable={false}
-                        size="small"
-                    />
-                )}
+                <LinkText color={page.visibility === "Unpublished" || disabled ? "textSecondary" : "textPrimary"}>
+                    <MarkedMatches text={page.path} matches={page.matches} />
+                </LinkText>
             </LinkContent>
-
+            {page.visibility === "Archived" && (
+                <ArchivedChip
+                    component="span"
+                    label={<FormattedMessage id="comet.pages.pages.archived" defaultMessage="Archived" />}
+                    color="primary"
+                    clickable={false}
+                    size="small"
+                />
+            )}
             {documentType.InfoTag !== undefined && (
                 <InfoPanel>
                     <documentType.InfoTag page={page} />
@@ -60,6 +62,7 @@ const LinkContent = styled("div")`
     margin-left: ${({ theme }) => theme.spacing(2)};
     display: flex;
     min-width: 0;
+    flex-direction: column;
 `;
 
 const LinkText = styled(Typography)`
