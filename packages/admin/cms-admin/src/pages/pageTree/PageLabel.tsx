@@ -25,9 +25,11 @@ const PageLabel: React.FunctionComponent<PageLabelProps> = ({ page, disabled, on
                 <LinkText color={page.visibility === "Unpublished" || disabled ? "textSecondary" : "textPrimary"}>
                     <MarkedMatches text={page.name} matches={page.matches} isPathMatch />
                 </LinkText>
-                <LinkText color={page.visibility === "Unpublished" || disabled ? "textSecondary" : "textPrimary"}>
-                    <MarkedMatches text={page.path} matches={page.matches} />
-                </LinkText>
+                {page.matches.some((match) => "where" in match) && (
+                    <LinkText color={page.visibility === "Unpublished" || disabled ? "textSecondary" : "textPrimary"}>
+                        <MarkedMatches text={page.path} matches={page.matches} />
+                    </LinkText>
+                )}
             </LinkContent>
             {page.visibility === "Archived" && (
                 <ArchivedChip
