@@ -71,13 +71,13 @@ export function createFilesController({ Scope: PassedScope }: { Scope?: Type<Dam
                 throw new CometValidationException("Validation failed", errors);
             }
 
-            const { scope, folderId } = transformedBody;
+            const { scope, folderId, sourceId, sourceType } = transformedBody;
 
             if (hasNonEmptyScope && !this.contentScopeService.canAccessScope(scope, user)) {
                 throw new ForbiddenException();
             }
 
-            const uploadedFile = await this.filesService.upload({ file, folderId }, nonEmptyScopeOrNothing(scope));
+            const uploadedFile = await this.filesService.upload({ file, folderId, sourceId, sourceType }, nonEmptyScopeOrNothing(scope));
             return Object.assign(uploadedFile, { fileUrl: await this.filesService.createFileUrl(uploadedFile) });
         }
 

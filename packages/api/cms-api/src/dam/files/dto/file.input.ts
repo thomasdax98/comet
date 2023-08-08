@@ -87,6 +87,12 @@ export class CreateFileInput {
     // TODO is this validation even used?
     @IsObject()
     scope?: DamScopeInterface;
+
+    @IsOptional()
+    sourceId?: string;
+
+    @IsOptional()
+    sourceType?: string;
 }
 
 @InputType({ isAbstract: true })

@@ -251,6 +251,8 @@ type DamFile {
   license: DamFileLicense
   createdAt: DateTime!
   updatedAt: DateTime!
+  sourceId: String!
+  sourceType: String!
   scope: DamScope!
   fileUrl: String!
   duplicates: [DamFile!]!

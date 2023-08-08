@@ -7,6 +7,8 @@ import { DamScopeInterface } from "../../types";
 export interface UploadFileBodyInterface {
     scope: DamScopeInterface;
     folderId?: string;
+    sourceId?: string;
+    sourceType?: string;
 }
 
 export function createUploadFileBody({ Scope }: { Scope: Type<DamScopeInterface> }): Type<UploadFileBodyInterface> {
@@ -18,6 +20,14 @@ export function createUploadFileBody({ Scope }: { Scope: Type<DamScopeInterface>
         @IsOptional()
         @IsString()
         folderId?: string;
+
+        @IsOptional()
+        @IsString()
+        sourceId?: string;
+
+        @IsOptional()
+        @IsString()
+        sourceType?: string;
     }
 
     return UploadFileBody;
