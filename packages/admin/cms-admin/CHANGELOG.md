@@ -1,5 +1,23 @@
 # @comet/cms-admin
 
+## 4.4.0
+
+### Minor Changes
+
+-   9b1a6507: Silence polling errors in page tree
+
+    Errors during polling (pages query, check for changes query) led to multiple consecutive error dialogs, which were irritating for our users. As these errors occurred randomly and would typically be resolved by the next poll, we decided to silence them altogether.
+
+### Patch Changes
+
+-   Updated dependencies [e824ffa6]
+    -   @comet/admin@4.4.0
+    -   @comet/admin-date-time@4.4.0
+    -   @comet/admin-icons@4.4.0
+    -   @comet/admin-rte@4.4.0
+    -   @comet/admin-theme@4.4.0
+    -   @comet/blocks-admin@4.4.0
+
 ## 4.3.0
 
 ### Minor Changes

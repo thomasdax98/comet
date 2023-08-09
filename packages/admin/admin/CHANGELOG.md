@@ -1,5 +1,20 @@
 # @comet/admin
 
+## 4.4.0
+
+### Minor Changes
+
+-   e824ffa6: Add `fullHeight` & `disablePadding` props to MainContent
+
+    `fullHeight` makes MainContent take up the remaining space below to fill the entire page.
+    This is helpful for virtualized components that need a fixed height, such as DataGrid or the PageTree.
+
+    `disablePadding` is helpful if a component requires the `fullHeight` behaviour but should fill the entire page without the surrounding space.
+
+### Patch Changes
+
+-   @comet/admin-icons@4.4.0
+
 ## 4.3.0
 
 ### Patch Changes

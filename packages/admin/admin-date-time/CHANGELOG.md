@@ -1,5 +1,13 @@
 # @comet/admin-date-time
 
+## 4.4.0
+
+### Patch Changes
+
+-   Updated dependencies [e824ffa6]
+    -   @comet/admin@4.4.0
+    -   @comet/admin-icons@4.4.0
+
 ## 4.3.0
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @comet/cms-api
 
+## 4.4.0
+
+### Patch Changes
+
+-   53ce0682: get file stats from uploaded file in filestorage
+    -   @comet/blocks-api@4.4.0
+
 ## 4.3.0
 
 ### Minor Changes
