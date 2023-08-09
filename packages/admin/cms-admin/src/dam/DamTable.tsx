@@ -39,8 +39,11 @@ import EditFile from "./FileForm/EditFile";
 
 interface FolderProps extends DamConfig {
     filterApi: IFilterApi<DamFilter>;
+    additionalToolbarItems?: AdditionalToolbarItem[];
     id?: string;
 }
+
+export type AdditionalToolbarItem = React.FC;
 
 export interface DamFilter {
     allowedMimetypes?: string[];
@@ -109,6 +112,9 @@ const Folder = ({ id, filterApi, ...props }: FolderProps) => {
                             >
                                 <FormattedMessage id="comet.pages.dam.addFolder" defaultMessage="Add Folder" />
                             </Button>
+                            {props.additionalToolbarItems?.map((AdditionalItem, key) => {
+                                return <AdditionalItem key={key} />;
+                            })}
                             <UploadSplitButton
                                 folderId={id}
                                 filter={{
@@ -143,6 +149,7 @@ export interface DamConfig {
     contentScopeIndicator?: React.ReactNode;
     hideMultiselect?: boolean;
     hideDamActions?: boolean;
+    additionalToolbarItems?: AdditionalToolbarItem[];
 }
 
 type DamTableProps = DamConfig;
@@ -177,7 +184,7 @@ export const DamTable = ({ ...props }: DamTableProps): React.ReactElement => {
             <FileUploadContextProvider>
                 <ManualDuplicatedFilenamesHandlerContextProvider>
                     <DamSelectionProvider>
-                        <Folder filterApi={filterApi} {...propsWithDefaultValues} />
+                        <Folder filterApi={filterApi} {...propsWithDefaultValues} additionalToolbarItems={props.additionalToolbarItems} />
                     </DamSelectionProvider>
                 </ManualDuplicatedFilenamesHandlerContextProvider>
             </FileUploadContextProvider>

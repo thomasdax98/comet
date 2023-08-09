@@ -41,7 +41,7 @@ interface UploadFileOptions {
     onAfterUpload?: (errorOccurred: boolean) => void;
 }
 
-interface Files {
+export interface Files {
     acceptedFiles: FileWithPath[];
     fileRejections: FileRejection[];
 }
