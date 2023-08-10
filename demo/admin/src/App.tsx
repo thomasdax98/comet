@@ -29,7 +29,7 @@ import { additionalPageTreeNodeFieldsFragment, EditPageNode } from "@src/common/
 import MasterHeader from "@src/common/MasterHeader";
 import MasterMenu from "@src/common/MasterMenu";
 import { createConfig } from "@src/config";
-import { ImportFromUnsplash } from "@src/dam/unsplash/importFromUnsplash";
+import { ImportFromUnsplash } from "@src/dam/unsplash/ImportFromUnsplash";
 import Dashboard from "@src/dashboard/Dashboard";
 import { PredefinedPage } from "@src/predefinedPage/PredefinedPage";
 import theme from "@src/theme";

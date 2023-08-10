@@ -1,6 +1,5 @@
 import { useApolloClient } from "@apollo/client";
 import { CancelButton, messages, SaveButton } from "@comet/admin";
-import { AddFolder as AddFolderIcon } from "@comet/admin-icons";
 import { useDamAcceptedMimeTypes } from "@comet/cms-admin";
 import { AdditionalToolbarItem } from "@comet/cms-admin/lib/dam/DamTable";
 import { useFileUpload } from "@comet/cms-admin/lib/dam/DataGrid/fileUpload/useFileUpload";
@@ -10,6 +9,8 @@ import { styled } from "@mui/material/styles";
 import { getRandomUnsplashImage, UnsplashImage } from "@src/dam/unsplash/getRandomUnsplashImage";
 import * as React from "react";
 import { FormattedMessage } from "react-intl";
+
+import UnsplashIcon from "./UnsplashIcon";
 
 export const ImportFromUnsplash: AdditionalToolbarItem = () => {
     const client = useApolloClient();
@@ -47,7 +48,7 @@ export const ImportFromUnsplash: AdditionalToolbarItem = () => {
 
     return (
         <>
-            <Button variant="text" color="inherit" startIcon={<AddFolderIcon />} onClick={handleOpenDialog}>
+            <Button variant="text" color="inherit" startIcon={<UnsplashIcon />} onClick={handleOpenDialog}>
                 <FormattedMessage id="comet.pages.dam.importFromUnsplash" defaultMessage="Import from Unsplash" />
             </Button>
             <Dialog open={isOpen} onClose={handleCloseDialog}>
