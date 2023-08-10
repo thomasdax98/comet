@@ -40,10 +40,15 @@ export const ImportFromUnsplash: AdditionalToolbarItem = () => {
         handleCloseDialog();
     };
 
+    const handleShuffle = async () => {
+        const image = await getRandomUnsplashImage();
+        setUnsplashImage(image);
+    };
+
     return (
         <>
             <Button variant="text" color="inherit" startIcon={<AddFolderIcon />} onClick={handleOpenDialog}>
-                <FormattedMessage id="comet.pages.dam.addFolder" defaultMessage="Import from Unsplash" />
+                <FormattedMessage id="comet.pages.dam.importFromUnsplash" defaultMessage="Import from Unsplash" />
             </Button>
             <Dialog open={isOpen} onClose={handleCloseDialog}>
                 <div>
@@ -53,6 +58,9 @@ export const ImportFromUnsplash: AdditionalToolbarItem = () => {
                     </DialogContent>
                     <DialogActions>
                         <CancelButton onClick={handleCloseDialog} />
+                        <Button onClick={handleShuffle}>
+                            <FormattedMessage id="comet.pages.dam.importFromUnsplash.dialog.shuffle" defaultMessage="Shuffle" />
+                        </Button>
                         <SaveButton onClick={handleSave}>
                             <FormattedMessage {...messages.save} />
                         </SaveButton>
