@@ -36,7 +36,7 @@ export const ImportFromUnsplash: AdditionalToolbarItem = () => {
     };
 
     const handleSave = () => {
-        uploadFiles(unsplashImage.file);
+        uploadFiles(unsplashImage.file, undefined, "unsplash", unsplashImage.url);
         handleCloseDialog();
     };
 
