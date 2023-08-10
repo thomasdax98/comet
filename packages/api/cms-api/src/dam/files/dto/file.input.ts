@@ -89,10 +89,10 @@ export class CreateFileInput {
     scope?: DamScopeInterface;
 
     @IsOptional()
-    sourceId?: string;
+    importSourceId?: string;
 
     @IsOptional()
-    sourceType?: string;
+    importSourceType?: string;
 }
 
 @InputType({ isAbstract: true })

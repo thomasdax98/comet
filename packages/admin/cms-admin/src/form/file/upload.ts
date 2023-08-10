@@ -4,8 +4,8 @@ interface UploadFileData {
     file: File;
     scope: Record<string, unknown>;
     folderId?: string;
-    sourceId?: string;
-    sourceType?: string;
+    importSourceId?: string;
+    importSourceType?: string;
 }
 
 export function upload<ResponseData>(
@@ -17,11 +17,11 @@ export function upload<ResponseData>(
     const formData = new FormData();
     formData.append("file", data.file);
     formData.append("scope", JSON.stringify(data.scope));
-    if (data.sourceId) {
-        formData.append("sourceId", data.sourceId);
+    if (data.importSourceId) {
+        formData.append("importSourceId", data.importSourceId);
     }
-    if (data.sourceType) {
-        formData.append("sourceType", data.sourceType);
+    if (data.importSourceType) {
+        formData.append("importSourceType", data.importSourceType);
     }
     if (data.folderId !== undefined) {
         formData.append("folderId", data.folderId);

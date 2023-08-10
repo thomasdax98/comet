@@ -47,7 +47,7 @@ export interface Files {
 }
 
 export interface FileUploadApi {
-    uploadFiles: ({ acceptedFiles, fileRejections }: Files, folderId?: string, sourceId?: string, sourceType?: string) => void;
+    uploadFiles: ({ acceptedFiles, fileRejections }: Files, folderId?: string, importSourceId?: string, importSourceType?: string) => void;
     validationErrors?: FileUploadValidationError[];
     maxFileSizeInBytes: number;
     dialogs: React.ReactNode;
@@ -350,7 +350,7 @@ export const useFileUpload = (options: UploadFileOptions): FileUploadApi => {
         [manualDuplicatedFilenamesHandler],
     );
 
-    const uploadFiles = async ({ acceptedFiles, fileRejections }: Files, folderId?: string, sourceId?: string, sourceType?: string) => {
+    const uploadFiles = async ({ acceptedFiles, fileRejections }: Files, folderId?: string, importSourceId?: string, importSourceType?: string) => {
         setProgressDialogOpen(true);
         setValidationErrors(undefined);
 
@@ -396,8 +396,8 @@ export const useFileUpload = (options: UploadFileOptions): FileUploadApi => {
                             file,
                             folderId: targetFolderId,
                             scope,
-                            sourceId,
-                            sourceType,
+                            importSourceId,
+                            importSourceType,
                         },
                         cancelUpload.current.token,
                         {

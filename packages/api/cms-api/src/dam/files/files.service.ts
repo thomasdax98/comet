@@ -202,10 +202,16 @@ export class FilesService {
         return withFilesSelect(this.selectQueryBuilder(), { imageId }).getSingleResult();
     }
 
-    async create({ folderId, sourceId, sourceType, ...data }: CreateFileInput): Promise<FileInterface> {
+    async create({ folderId, importSourceId, importSourceType, ...data }: CreateFileInput): Promise<FileInterface> {
         const folder = folderId ? await this.foldersService.findOneById(folderId) : undefined;
         return this.save(
-            this.filesRepository.create({ ...data, license: { ...data.license }, folder: folder?.id, sourceId: sourceId, sourceType: sourceType }),
+            this.filesRepository.create({
+                ...data,
+                license: { ...data.license },
+                folder: folder?.id,
+                importSourceId: importSourceId,
+                importSourceType: importSourceType,
+            }),
         );
     }
 
@@ -273,7 +279,12 @@ export class FilesService {
     }
 
     async upload(
-        { file, folderId, sourceId, sourceType }: { file: FileUploadInterface; folderId?: string; sourceId?: string; sourceType?: string },
+        {
+            file,
+            folderId,
+            importSourceId,
+            importSourceType,
+        }: { file: FileUploadInterface; folderId?: string; importSourceId?: string; importSourceType?: string },
         scope?: DamScopeInterface,
     ): Promise<FileInterface> {
         let result: FileInterface | undefined = undefined;
@@ -330,8 +341,8 @@ export class FilesService {
                         : undefined,
                 contentHash,
                 scope,
-                sourceId: sourceId,
-                sourceType: sourceType,
+                importSourceId: importSourceId,
+                importSourceType: importSourceType,
             });
 
             if (result.image) {
