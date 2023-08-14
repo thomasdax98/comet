@@ -108,7 +108,7 @@ function ProductForm({ id }: FormProps): React.ReactElement {
             image: rootBlocks.image.state2Output(formValues.image),
             type: formValues.type as GQLProductType,
             category: formValues.category?.id,
-            tags: formValues.tags.map((i) => i.id),
+            tags: formValues.tags?.map((i) => i.id) ?? [],
             variants: [],
             articleNumbers: [],
             discounts: [],
