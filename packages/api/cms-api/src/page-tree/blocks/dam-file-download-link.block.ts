@@ -10,13 +10,21 @@ import {
     inputToData,
     TraversableTransformResponse,
 } from "@comet/blocks-api";
-import { IsOptional, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsOptional, IsString, IsUUID } from "class-validator";
 import { FilesService } from "src/dam/files/files.service";
+
+export enum OpenFileTypeMethod {
+    NEW_TAB = "NEW_TAB",
+    DOWNLOAD = "DOWNLOAD",
+}
 
 class DamFileDownloadLinkBlockData extends BlockData {
     fileId?: string;
     gtmElementType?: string;
     gtmElementName?: string;
+
+    @BlockField({ type: "enum", enum: OpenFileTypeMethod })
+    openFileType: OpenFileTypeMethod;
 
     async transformToPlain(
         { filesService }: { filesService: FilesService },
@@ -30,6 +38,8 @@ class DamFileDownloadLinkBlockData extends BlockData {
             if (this.gtmElementName) ret.tracking.gtmElementName = this.gtmElementName;
         }
 
+        ret.openFileType = this.openFileType;
+
         if (this.fileId === undefined) {
             return ret;
         }
@@ -40,7 +50,6 @@ class DamFileDownloadLinkBlockData extends BlockData {
             ret.file = {
                 id: file.id,
                 name: file.name,
-                size: file.size,
                 damPath: await filesService.getDamPath(file),
                 fileUrl: await filesService.createFileUrl(file, previewDamUrls),
             };
@@ -65,6 +74,10 @@ class DamFileDownloadLinkBlockInput extends BlockInput {
     @IsString()
     @BlockField({ nullable: true })
     gtmElementName?: string;
+
+    @IsEnum(OpenFileTypeMethod)
+    @BlockField({ type: "enum", enum: OpenFileTypeMethod })
+    openFileType: OpenFileTypeMethod;
 
     transformToBlockData(): DamFileDownloadLinkBlockData {
         return inputToData(DamFileDownloadLinkBlockData, this);
@@ -91,11 +104,6 @@ class Meta extends AnnotationBlockMeta {
                             nullable: false,
                         },
                         {
-                            name: "size",
-                            kind: BlockMetaFieldKind.Number,
-                            nullable: false,
-                        },
-                        {
                             name: "damPath",
                             kind: BlockMetaFieldKind.String,
                             nullable: false,
@@ -108,6 +116,7 @@ class Meta extends AnnotationBlockMeta {
                     ],
                 },
             },
+            ...super.fields,
             {
                 name: "tracking",
                 kind: BlockMetaFieldKind.NestedObject,
