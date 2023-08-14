@@ -125,6 +125,81 @@
         "inputFields": []
     },
     {
+        "name": "DamFileDownloadLink",
+        "fields": [
+            {
+                "name": "file",
+                "kind": "NestedObject",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "name",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "size",
+                            "kind": "Number",
+                            "nullable": false
+                        },
+                        {
+                            "name": "damPath",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "fileUrl",
+                            "kind": "String",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": true
+            },
+            {
+                "name": "tracking",
+                "kind": "NestedObject",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "gtmElementType",
+                            "kind": "String",
+                            "nullable": true
+                        },
+                        {
+                            "name": "gtmElementName",
+                            "kind": "String",
+                            "nullable": true
+                        }
+                    ]
+                },
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "fileId",
+                "kind": "String",
+                "nullable": true
+            },
+            {
+                "name": "gtmElementType",
+                "kind": "String",
+                "nullable": true
+            },
+            {
+                "name": "gtmElementName",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
         "name": "DamImage",
         "fields": [
             {
@@ -654,7 +729,8 @@
                             "blocks": [
                                 "InternalLink",
                                 "ExternalLink",
-                                "NewsLink"
+                                "NewsLink",
+                                "DamFileDownloadLink"
                             ],
                             "nullable": false
                         }
@@ -683,7 +759,8 @@
                             "blocks": [
                                 "InternalLink",
                                 "ExternalLink",
-                                "NewsLink"
+                                "NewsLink",
+                                "DamFileDownloadLink"
                             ],
                             "nullable": false
                         }
