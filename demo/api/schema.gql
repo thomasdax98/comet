@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Hmac {
+  timestamp: Float!
+  hash: String!
+}
+
 type ImageCropArea {
   focalPoint: FocalPoint!
   width: Float
@@ -525,6 +530,8 @@ input RedirectScopeInput {
 
 type Query {
   currentUser: CurrentUser!
+  hmacCreate: Hmac!
+  hmacValidate(timestamp: Float!, hash: String!): Boolean!
   buildTemplates: [BuildTemplate!]!
   builds(limit: Float): [Build!]!
   autoBuildStatus: AutoBuildStatus!

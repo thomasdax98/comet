@@ -1,3 +1,8 @@
+type Hmac {
+  timestamp: Float!
+  hash: String!
+}
+
 type ImageCropArea {
   focalPoint: FocalPoint!
   width: Float
@@ -276,6 +281,8 @@ type Query {
   pageTreeNodeSlugAvailable(scope: PageTreeNodeScopeInput!, parentId: ID, slug: String!): SlugAvailability!
   cronJobs: [CronJob!]!
   currentUser: CurrentUser!
+  hmacCreate: Hmac!
+  hmacValidate(timestamp: Float!, hash: String!): Boolean!
 }
 
 input RedirectScopeInput {
