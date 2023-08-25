@@ -7,12 +7,12 @@ import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Args, ID, Info, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { GraphQLResolveInfo } from "graphql";
 
-import { Customer } from "../entities/customer.entity";
-import { Order } from "../entities/order.entity";
-import { Product } from "../entities/product.entity";
 import { OrderInput, OrderUpdateInput } from "./dto/order.input";
 import { OrdersArgs } from "./dto/orders.args";
 import { PaginatedOrders } from "./dto/paginated-orders";
+import { Customer } from "./entities/customer.entity";
+import { Order } from "./entities/order.entity";
+import { Product } from "./entities/product.entity";
 import { OrdersService } from "./orders.service";
 
 @Resolver(() => Order)
@@ -63,15 +63,21 @@ export class OrderResolver {
     @Mutation(() => Order)
     async createOrder(@Args("input", { type: () => OrderInput }) input: OrderInput): Promise<Order> {
         const { products: productsInput, customer: customerInput, ...assignInput } = input;
+
+        const products = await this.productRepository.find({ id: productsInput });
+        if (products.length != productsInput.length) throw new Error("Couldn't find all products that were passed as input");
+
+        const totalAmountPaid = products.reduce((sum, product) => {
+            return sum + Number(product.price);
+        }, 0);
+
         const order = this.repository.create({
             ...assignInput,
-
+            totalAmountPaid: String(totalAmountPaid),
             customer: Reference.create(await this.customerRepository.findOneOrFail(customerInput)),
         });
 
         if (productsInput) {
-            const products = await this.productRepository.find({ id: productsInput });
-            if (products.length != productsInput.length) throw new Error("Couldn't find all products that were passed as input");
             await order.products.loadItems();
             order.products.set(products.map((product) => Reference.create(product)));
         }
@@ -97,7 +103,7 @@ export class OrderResolver {
         order.assign({
             ...assignInput,
 
-            customer: Reference.create(await this.customerRepository.findOneOrFail(customerInput)),
+            customer: customerInput ? Reference.create(await this.customerRepository.findOneOrFail(customerInput)) : order.customer,
         });
 
         if (productsInput) {

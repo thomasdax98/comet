@@ -1,5 +1,5 @@
 import { RootBlockEntity } from "@comet/blocks-api";
-import { CrudField, CrudGenerator, DocumentInterface } from "@comet/cms-api";
+import { CrudField, DocumentInterface } from "@comet/cms-api";
 import { BaseEntity, Collection, DecimalType, Entity, ManyToMany, ManyToOne, OptionalProps, PrimaryKey, Property, Ref } from "@mikro-orm/core";
 import { Field, Float, ID, ObjectType } from "@nestjs/graphql";
 import { Customer } from "@src/shop/entities/customer.entity";
@@ -11,7 +11,6 @@ import { v4 as uuid } from "uuid";
     implements: () => [DocumentInterface],
 })
 @RootBlockEntity()
-@CrudGenerator({ targetDirectory: `${__dirname}/../generated/` })
 export class Order extends BaseEntity<Order, "id"> implements DocumentInterface {
     [OptionalProps]?: "createdAt" | "updatedAt";
 

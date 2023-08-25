@@ -3,7 +3,7 @@
 import { PaginatedResponseFactory } from "@comet/cms-api";
 import { ObjectType } from "@nestjs/graphql";
 
-import { Order } from "../../entities/order.entity";
+import { Order } from "../entities/order.entity";
 
 @ObjectType()
 export class PaginatedOrders extends PaginatedResponseFactory.create(Order) {}

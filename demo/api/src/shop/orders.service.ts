@@ -4,8 +4,8 @@ import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@comet/cms-api";
 import { ObjectQuery } from "@mikro-orm/core";
 import { Injectable } from "@nestjs/common";
 
-import { Order } from "../entities/order.entity";
 import { OrderFilter } from "./dto/order.filter";
+import { Order } from "./entities/order.entity";
 
 @Injectable()
 export class OrdersService {
