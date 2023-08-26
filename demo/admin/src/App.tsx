@@ -31,6 +31,9 @@ import MasterMenu from "@src/common/MasterMenu";
 import { createConfig } from "@src/config";
 import Dashboard from "@src/dashboard/Dashboard";
 import { PredefinedPage } from "@src/predefinedPage/PredefinedPage";
+import { CustomersPage } from "@src/shop/customers/generated/CustomersPage";
+import { OrdersPage } from "@src/shop/orders/generated/OrdersPage";
+import { ProductsPage } from "@src/shop/products/generated/ProductsPage";
 import theme from "@src/theme";
 import * as React from "react";
 import { DndProvider } from "react-dnd";
@@ -203,6 +206,18 @@ class App extends React.Component {
                                                                                         component={ComponentDemo}
                                                                                     />
 
+                                                                                    <RouteWithErrorBoundary
+                                                                                        path={`${match.path}/shop/products`}
+                                                                                        component={ProductsPage}
+                                                                                    />
+                                                                                    <RouteWithErrorBoundary
+                                                                                        path={`${match.path}/shop/customers`}
+                                                                                        component={CustomersPage}
+                                                                                    />
+                                                                                    <RouteWithErrorBoundary
+                                                                                        path={`${match.path}/shop/orders`}
+                                                                                        component={OrdersPage}
+                                                                                    />
                                                                                     <Redirect from={`${match.path}`} to={`${match.url}/dashboard`} />
                                                                                 </Switch>
                                                                             </MasterLayout>
