@@ -8,7 +8,7 @@ import { writeGenerated } from "./utils/writeGenerated";
 
 export async function writeCrudForm(generatorConfig: CrudGeneratorConfig, schema: IntrospectionQuery): Promise<void> {
     const { target: targetDirectory, entityName } = generatorConfig;
-    const { classNamePlural, classNameSingular, instanceNamePlural } = buildNameVariants(entityName);
+    const { classNameSingular, instanceNamePlural } = buildNameVariants(entityName);
     const rootBlocks = findRootBlocks(generatorConfig, schema);
     const instanceEntityName = entityName[0].toLowerCase() + entityName.substring(1);
 
@@ -150,11 +150,15 @@ export async function writeCrudForm(generatorConfig: CrudGeneratorConfig, schema
         numberFields.length > 0
             ? `Omit<GQL${entityName}FormFragment, ${numberFields.map((field) => `"${field.name}"`).join(", ")}>`
             : `GQL${entityName}FormFragment`
-    } & {
+    } ${
+        numberFields.length > 0 || Object.keys(rootBlocks).length > 0
+            ? `& {
         ${numberFields.map((field) => `${field.name}: string;`).join("\n")}
         ${Object.keys(rootBlocks)
             .map((rootBlockKey) => `${rootBlockKey}: BlockState<typeof rootBlocks.${rootBlockKey}>;`)
             .join("\n")}
+    }`
+            : ""
     };
 
     interface FormProps {
@@ -262,7 +266,9 @@ export async function writeCrudForm(generatorConfig: CrudGeneratorConfig, schema
                                 </IconButton>
                             </ToolbarItem>
                             <ToolbarTitleItem>
-                                {mode == "edit" ? values.title : <FormattedMessage id="${instanceNamePlural}.new${classNameSingular}" defaultMessage="New ${camelCaseToHumanReadable(
+                                {mode == "edit" ? <FormattedMessage id="${instanceNamePlural}.edit${classNameSingular}" defaultMessage="Edit ${camelCaseToHumanReadable(
+        classNameSingular,
+    )}" /> : <FormattedMessage id="${instanceNamePlural}.new${classNameSingular}" defaultMessage="New ${camelCaseToHumanReadable(
         classNameSingular,
     )}" />}
                             </ToolbarTitleItem>

@@ -152,7 +152,11 @@ export function ProductForm({ id }: FormProps): React.ReactElement {
                             </IconButton>
                         </ToolbarItem>
                         <ToolbarTitleItem>
-                            {mode == "edit" ? values.title : <FormattedMessage id="products.newProduct" defaultMessage="New Product" />}
+                            {mode == "edit" ? (
+                                <FormattedMessage id="products.editProduct" defaultMessage="Edit Product" />
+                            ) : (
+                                <FormattedMessage id="products.newProduct" defaultMessage="New Product" />
+                            )}
                         </ToolbarTitleItem>
                         <ToolbarFillSpace />
                         <ToolbarActions>

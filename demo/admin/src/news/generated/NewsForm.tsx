@@ -160,7 +160,11 @@ export function NewsForm({ id }: FormProps): React.ReactElement {
                             </IconButton>
                         </ToolbarItem>
                         <ToolbarTitleItem>
-                            {mode == "edit" ? values.title : <FormattedMessage id="news.newNews" defaultMessage="New News" />}
+                            {mode == "edit" ? (
+                                <FormattedMessage id="news.editNews" defaultMessage="Edit News" />
+                            ) : (
+                                <FormattedMessage id="news.newNews" defaultMessage="New News" />
+                            )}
                         </ToolbarTitleItem>
                         <ToolbarFillSpace />
                         <ToolbarActions>
