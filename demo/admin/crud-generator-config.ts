@@ -10,10 +10,6 @@ export default [
         rootBlocks: { image: { name: "DamImageBlock", import: "@comet/cms-admin" } },
     },
     {
-        target: "src/shop/orders/generated",
-        entityName: "Order",
-    },
-    {
         target: "src/shop/customers/generated",
         entityName: "Customer",
     },

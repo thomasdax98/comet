@@ -32,8 +32,13 @@ import { createConfig } from "@src/config";
 import Dashboard from "@src/dashboard/Dashboard";
 import { PredefinedPage } from "@src/predefinedPage/PredefinedPage";
 import { CustomersPage } from "@src/shop/customers/generated/CustomersPage";
+<<<<<<< HEAD
 import { OrdersPage } from "@src/shop/orders/generated/OrdersPage";
 import { ProductsPage } from "@src/shop/products/generated/ProductsPage";
+=======
+import { OrdersPage } from "@src/shop/orders/OrdersPage";
+import { ShopProductsPage } from "@src/shop/shopProducts/generated/ShopProductsPage";
+>>>>>>> c1923441 (admin: use generated order components as scaffold)
 import theme from "@src/theme";
 import * as React from "react";
 import { DndProvider } from "react-dnd";
