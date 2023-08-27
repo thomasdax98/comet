@@ -43,7 +43,6 @@ import { PageTreeNodeScope } from "./page-tree/dto/page-tree-node-scope";
 import { PageTreeNode } from "./page-tree/entities/page-tree-node.entity";
 import { Page } from "./pages/entities/page.entity";
 import { PredefinedPageModule } from "./predefined-page/predefined-page.module";
-import { ProductsModule } from "./products/products.module";
 import { RedirectScope } from "./redirects/dto/redirect-scope";
 
 @Module({})
@@ -138,7 +137,6 @@ export class AppModule {
                 FooterModule,
                 PredefinedPageModule,
                 CronJobsModule,
-                ProductsModule,
             ],
         };
     }
