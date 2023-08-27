@@ -1,4 +1,11 @@
-import { IntrospectionEnumType, IntrospectionField, IntrospectionNamedTypeRef, IntrospectionObjectType, IntrospectionQuery } from "graphql";
+import {
+    IntrospectionEnumType,
+    IntrospectionInputObjectType,
+    IntrospectionInputValue,
+    IntrospectionNamedTypeRef,
+    IntrospectionObjectType,
+    IntrospectionQuery,
+} from "graphql";
 
 import { CrudGeneratorConfig } from "./types";
 import { buildNameVariants } from "./utils/buildNameVariants";
@@ -16,7 +23,13 @@ export async function writeCrudForm(generatorConfig: CrudGeneratorConfig, schema
         | IntrospectionObjectType
         | undefined;
     if (!schemaEntity) throw new Error("didn't find entity in schema types");
-    const formFields = schemaEntity.fields
+
+    const schemaEntityInput = schema.__schema.types.find((type) => type.kind === "INPUT_OBJECT" && type.name === `${entityName}Input`) as
+        | IntrospectionInputObjectType
+        | undefined;
+    if (!schemaEntityInput) throw new Error("didn't find entity input type in schema types");
+
+    const formFields = schemaEntityInput.inputFields
         .filter((field) => {
             if (field.name === "id" || field.name === "updatedAt" || field.name === "createdAt" || field.name === "scope") return false;
             return true;
@@ -25,7 +38,7 @@ export async function writeCrudForm(generatorConfig: CrudGeneratorConfig, schema
             let type = field.type;
             if (type.kind == "NON_NULL") type = type.ofType;
             if (type.kind == "LIST") return false;
-            if (type.kind == "OBJECT") return false; //TODO support nested objects
+            if (type.kind == "INPUT_OBJECT") return false; //TODO support nested objects
             return true;
         });
 
@@ -290,7 +303,7 @@ export async function writeCrudForm(generatorConfig: CrudGeneratorConfig, schema
     writeGenerated(`${targetDirectory}/${entityName}Form.tsx`, out);
 }
 
-function generateField({ entityName, ...generatorConfig }: CrudGeneratorConfig, field: IntrospectionField, schema: IntrospectionQuery) {
+function generateField({ entityName, ...generatorConfig }: CrudGeneratorConfig, field: IntrospectionInputValue, schema: IntrospectionQuery) {
     const rootBlocks = findRootBlocks({ entityName, ...generatorConfig }, schema);
     const instanceEntityName = entityName[0].toLowerCase() + entityName.substring(1);
 
