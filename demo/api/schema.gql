@@ -221,6 +221,7 @@ type Product implements DocumentInterface {
   image: DamImageBlockData!
   createdAt: DateTime!
   orders: [Order!]!
+  vat: Float!
 }
 
 enum ProductType {

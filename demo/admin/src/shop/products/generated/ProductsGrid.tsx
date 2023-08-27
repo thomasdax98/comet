@@ -44,6 +44,7 @@ const productsFragment = gql`
         type
         image
         createdAt
+        vat
     }
 `;
 
@@ -135,6 +136,14 @@ export function ProductsGrid(): React.ReactElement {
             headerName: intl.formatMessage({ id: "product.createdAt", defaultMessage: "Created At" }),
             type: "dateTime",
             valueGetter: ({ value }) => value && new Date(value),
+            width: 150,
+        },
+        {
+            field: "vat",
+            headerName: intl.formatMessage({ id: "product.vat", defaultMessage: "Vat" }),
+            type: "number",
+            filterable: false,
+            sortable: false,
             width: 150,
         },
         {
