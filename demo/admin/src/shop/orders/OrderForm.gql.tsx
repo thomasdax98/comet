@@ -3,12 +3,34 @@
 
 import { gql } from "@apollo/client";
 
+export const orderFormCustomerFragment = gql`
+    fragment OrderFormCustomer on Customer {
+        id
+        firstname
+        lastname
+    }
+`;
+
+export const orderFormProductFragment = gql`
+    fragment OrderFormProduct on Product {
+        id
+        name
+    }
+`;
+
 export const orderFormFragment = gql`
     fragment OrderForm on Order {
-        totalAmountPaid
         isPaid
         date
+        customer {
+            ...OrderFormCustomer
+        }
+        products {
+            ...OrderFormProduct
+        }
     }
+    ${orderFormCustomerFragment}
+    ${orderFormProductFragment}
 `;
 
 export const orderFormQuery = gql`
@@ -50,4 +72,28 @@ export const updateOrderMutation = gql`
         }
     }
     ${orderFormFragment}
+`;
+
+export const orderFormCustomersQuery = gql`
+    query OrderFormCustomers {
+        # don't hardcode limit in real app
+        customers(limit: 50) {
+            nodes {
+                ...OrderFormCustomer
+            }
+        }
+    }
+    ${orderFormCustomerFragment}
+`;
+
+export const orderFormProductsQuery = gql`
+    query OrderFormProducts {
+        # don't hardcode limit in real app
+        products(limit: 50) {
+            nodes {
+                ...OrderFormProduct
+            }
+        }
+    }
+    ${orderFormProductFragment}
 `;

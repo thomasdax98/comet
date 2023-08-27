@@ -5,8 +5,8 @@ import { useApolloClient, useQuery } from "@apollo/client";
 import {
     Field,
     FinalForm,
+    FinalFormAutocomplete,
     FinalFormCheckbox,
-    FinalFormInput,
     FinalFormSaveSplitButton,
     FinalFormSubmitEvent,
     MainContent,
@@ -15,6 +15,7 @@ import {
     ToolbarFillSpace,
     ToolbarItem,
     ToolbarTitleItem,
+    useAsyncOptionsProps,
     useFormApiRef,
     useStackApi,
     useStackSwitchApi,
@@ -28,11 +29,24 @@ import { filter } from "graphql-anywhere";
 import React from "react";
 import { FormattedMessage } from "react-intl";
 
-import { createOrderMutation, orderFormFragment, orderFormQuery, updateOrderMutation } from "./OrderForm.gql";
+import {
+    createOrderMutation,
+    orderFormCustomersQuery,
+    orderFormFragment,
+    orderFormProductsQuery,
+    orderFormQuery,
+    updateOrderMutation,
+} from "./OrderForm.gql";
 import {
     GQLCreateOrderMutation,
     GQLCreateOrderMutationVariables,
+    GQLOrderFormCustomerFragment,
+    GQLOrderFormCustomersQuery,
+    GQLOrderFormCustomersQueryVariables,
     GQLOrderFormFragment,
+    GQLOrderFormProductFragment,
+    GQLOrderFormProductsQuery,
+    GQLOrderFormProductsQueryVariables,
     GQLOrderFormQuery,
     GQLOrderFormQueryVariables,
     GQLUpdateOrderMutation,
@@ -64,9 +78,10 @@ export function OrderForm({ id }: FormProps): React.ReactElement {
             data?.order
                 ? {
                       ...filter<GQLOrderFormFragment>(orderFormFragment, data.order),
-                      totalAmountPaid: String(data.order.totalAmountPaid),
+                      customer: data.order.customer,
+                      products: data.order.products,
                   }
-                : {},
+                : { products: [] },
         [data],
     );
 
@@ -88,7 +103,8 @@ export function OrderForm({ id }: FormProps): React.ReactElement {
 
         const output = {
             ...state,
-            totalAmountPaid: parseFloat(state.totalAmountPaid),
+            customer: state.customer.id,
+            products: state.products.map((product) => product.id),
         };
 
         if (mode === "edit") {
@@ -114,6 +130,30 @@ export function OrderForm({ id }: FormProps): React.ReactElement {
             }
         }
     };
+
+    const selectCustomerAsyncProps = useAsyncOptionsProps<GQLOrderFormCustomerFragment>(async () => {
+        const { data, error } = await client.query<GQLOrderFormCustomersQuery, GQLOrderFormCustomersQueryVariables>({
+            query: orderFormCustomersQuery,
+        });
+
+        if (error) {
+            throw new Error("Can't load customers");
+        }
+
+        return data.customers.nodes;
+    });
+
+    const selectProductsAsyncProps = useAsyncOptionsProps<GQLOrderFormProductFragment>(async () => {
+        const { data, error } = await client.query<GQLOrderFormProductsQuery, GQLOrderFormProductsQueryVariables>({
+            query: orderFormProductsQuery,
+        });
+
+        if (error) {
+            throw new Error("Can't load products");
+        }
+
+        return data.products.nodes;
+    });
 
     if (error) throw error;
 
@@ -153,14 +193,6 @@ export function OrderForm({ id }: FormProps): React.ReactElement {
                         </ToolbarActions>
                     </Toolbar>
                     <MainContent>
-                        <Field
-                            required
-                            fullWidth
-                            name="totalAmountPaid"
-                            component={FinalFormInput}
-                            type="number"
-                            label={<FormattedMessage id="order.totalAmountPaid" defaultMessage="Total Amount Paid" />}
-                        />
                         <Field name="isPaid" label="" type="checkbox" fullWidth>
                             {(props) => (
                                 <FormControlLabel
@@ -175,6 +207,27 @@ export function OrderForm({ id }: FormProps): React.ReactElement {
                             name="date"
                             component={FinalFormDatePicker}
                             label={<FormattedMessage id="order.date" defaultMessage="Date" />}
+                        />
+                        <Field
+                            label={<FormattedMessage id="order.customer" defaultMessage="Customer" />}
+                            name="customer"
+                            component={FinalFormAutocomplete}
+                            {...selectCustomerAsyncProps}
+                            getOptionLabel={(option: GQLOrderFormCustomerFragment) => `${option.firstname} ${option.lastname}`}
+                            getOptionSelected={(option: GQLOrderFormCustomerFragment, value: GQLOrderFormCustomerFragment) => {
+                                return option.id === value.id;
+                            }}
+                            fullWidth
+                        />
+                        <Field
+                            label={<FormattedMessage id="order.shopProducts" defaultMessage="Products" />}
+                            name="products"
+                            component={FinalFormAutocomplete}
+                            multiple
+                            {...selectProductsAsyncProps}
+                            getOptionLabel={(option: GQLOrderFormProductFragment) => option.name}
+                            isOptionEqualToValue={(option: GQLOrderFormProductFragment, value: GQLOrderFormProductFragment) => option.id === value.id}
+                            fullWidth
                         />
                     </MainContent>
                 </EditPageLayout>

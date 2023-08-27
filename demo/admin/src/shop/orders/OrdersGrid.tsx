@@ -38,6 +38,12 @@ const ordersFragment = gql`
         updatedAt
         totalAmountPaid
         isPaid
+        customer {
+            id
+        }
+        products {
+            id
+        }
         date
         createdAt
     }
@@ -141,8 +147,8 @@ export function OrdersGrid(): React.ReactElement {
                                 return {
                                     isPaid: row.isPaid,
                                     date: row.date,
-                                    products: row.products,
-                                    customer: row.customer,
+                                    products: row.products.map((product) => product.id),
+                                    customer: row.customer.id,
                                 };
                             }}
                             onPaste={async ({ input }) => {
