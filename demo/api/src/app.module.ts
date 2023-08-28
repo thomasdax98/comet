@@ -27,6 +27,7 @@ import { DbModule } from "@src/db/db.module";
 import { LinksModule } from "@src/links/links.module";
 import { PagesModule } from "@src/pages/pages.module";
 import { PredefinedPage } from "@src/predefined-page/entities/predefined-page.entity";
+import { ShopModule } from "@src/shop/shop.module";
 import { Request } from "express";
 
 import { AuthModule } from "./auth/auth.module";
@@ -137,6 +138,7 @@ export class AppModule {
                 FooterModule,
                 PredefinedPageModule,
                 CronJobsModule,
+                ShopModule,
             ],
         };
     }

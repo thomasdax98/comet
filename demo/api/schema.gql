@@ -211,6 +211,65 @@ type PredefinedPage implements DocumentInterface {
   type: String
 }
 
+type Product implements DocumentInterface {
+  id: ID!
+  updatedAt: DateTime!
+  name: String!
+  description: String!
+  price: Float!
+  type: ProductType!
+  image: DamImageBlockData!
+  createdAt: DateTime!
+  orders: [Order!]!
+  vat: Float!
+}
+
+enum ProductType {
+  Laptop
+  Smartphone
+  Smartwatch
+}
+
+"""DamImage root block data"""
+scalar DamImageBlockData @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+type Order implements DocumentInterface {
+  id: ID!
+  updatedAt: DateTime!
+  totalAmountPaid: Float!
+  isPaid: Boolean!
+  date: DateTime!
+  createdAt: DateTime!
+  customer: Customer!
+  products: [Product!]!
+}
+
+type Customer implements DocumentInterface {
+  id: ID!
+  updatedAt: DateTime!
+  firstname: String!
+  lastname: String!
+  email: String!
+  address: String!
+  createdAt: DateTime!
+  orders: [Order!]!
+}
+
+type PaginatedCustomers {
+  nodes: [Customer!]!
+  totalCount: Int!
+}
+
+type PaginatedProducts {
+  nodes: [Product!]!
+  totalCount: Int!
+}
+
+type PaginatedOrders {
+  nodes: [Order!]!
+  totalCount: Int!
+}
+
 type CurrentUser {
   name: String!
   email: String!
@@ -325,9 +384,6 @@ enum NewsCategory {
   Company
   Awards
 }
-
-"""DamImage root block data"""
-scalar DamImageBlockData @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
 
 """NewsContent root block data"""
 scalar NewsContentBlockData @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
@@ -450,6 +506,12 @@ type Query {
   predefinedPage(id: ID!): PredefinedPage
   pageTreeNodeForPredefinedPage(type: String!, scope: PageTreeNodeScopeInput!): PageTreeNode
   cronJobs: [CronJob!]!
+  order(id: ID!): Order!
+  orders(offset: Int! = 0, limit: Int! = 25, search: String, filter: OrderFilter, sort: [OrderSort!]): PaginatedOrders!
+  product(id: ID!): Product!
+  products(offset: Int! = 0, limit: Int! = 25, search: String, filter: ProductFilter, sort: [ProductSort!]): PaginatedProducts!
+  customer(id: ID!): Customer!
+  customers(offset: Int! = 0, limit: Int! = 25, search: String, filter: CustomerFilter, sort: [CustomerSort!]): PaginatedCustomers!
 }
 
 enum SortDirection {
@@ -572,6 +634,102 @@ enum NewsSortField {
   updatedAt
 }
 
+input OrderFilter {
+  totalAmountPaid: NumberFilter
+  isPaid: BooleanFilter
+  date: DateFilter
+  customer: ManyToOneFilter
+  createdAt: DateFilter
+  updatedAt: DateFilter
+  and: [OrderFilter!]
+  or: [OrderFilter!]
+}
+
+input NumberFilter {
+  equal: Float
+  lowerThan: Float
+  greaterThan: Float
+  lowerThanEqual: Float
+  greaterThanEqual: Float
+  notEqual: Float
+}
+
+input ManyToOneFilter {
+  isAnyOf: [ID!]
+  equal: ID
+  notEqual: ID
+}
+
+input OrderSort {
+  field: OrderSortField!
+  direction: SortDirection! = ASC
+}
+
+enum OrderSortField {
+  totalAmountPaid
+  isPaid
+  date
+  customer
+  createdAt
+  updatedAt
+}
+
+input ProductFilter {
+  name: StringFilter
+  description: StringFilter
+  price: NumberFilter
+  type: ProductTypeEnumFilter
+  createdAt: DateFilter
+  updatedAt: DateFilter
+  and: [ProductFilter!]
+  or: [ProductFilter!]
+}
+
+input ProductTypeEnumFilter {
+  isAnyOf: [ProductType!]
+  equal: ProductType
+  notEqual: ProductType
+}
+
+input ProductSort {
+  field: ProductSortField!
+  direction: SortDirection! = ASC
+}
+
+enum ProductSortField {
+  name
+  description
+  price
+  type
+  createdAt
+  updatedAt
+}
+
+input CustomerFilter {
+  firstname: StringFilter
+  lastname: StringFilter
+  email: StringFilter
+  address: StringFilter
+  createdAt: DateFilter
+  updatedAt: DateFilter
+  and: [CustomerFilter!]
+  or: [CustomerFilter!]
+}
+
+input CustomerSort {
+  field: CustomerSortField!
+  direction: SortDirection! = ASC
+}
+
+enum CustomerSortField {
+  firstname
+  lastname
+  email
+  address
+  createdAt
+  updatedAt
+}
+
 type Mutation {
   currentUserSignOut: String!
   createBuilds(input: CreateBuildsInput!): Boolean!
@@ -610,6 +768,15 @@ type Mutation {
   updateMainMenuItem(pageTreeNodeId: ID!, input: MainMenuItemInput!, lastUpdatedAt: DateTime): MainMenuItem!
   saveFooter(scope: FooterContentScopeInput!, input: FooterInput!, lastUpdatedAt: DateTime): Footer!
   savePredefinedPage(id: ID!, input: PredefinedPageInput!, attachedPageTreeNodeId: ID!, lastUpdatedAt: DateTime): PredefinedPage!
+  createOrder(input: OrderInput!): Order!
+  updateOrder(id: ID!, input: OrderUpdateInput!, lastUpdatedAt: DateTime): Order!
+  deleteOrder(id: ID!): Boolean!
+  createProduct(input: ProductInput!): Product!
+  updateProduct(id: ID!, input: ProductUpdateInput!, lastUpdatedAt: DateTime): Product!
+  deleteProduct(id: ID!): Boolean!
+  createCustomer(input: CustomerInput!): Customer!
+  updateCustomer(id: ID!, input: CustomerUpdateInput!, lastUpdatedAt: DateTime): Customer!
+  deleteCustomer(id: ID!): Boolean!
 }
 
 input CreateBuildsInput {
@@ -771,4 +938,48 @@ scalar FooterContentBlockInput @specifiedBy(url: "http://www.ecma-international.
 
 input PredefinedPageInput {
   type: String
+}
+
+input OrderInput {
+  isPaid: Boolean!
+  date: DateTime!
+  products: [ID!]!
+  customer: ID!
+}
+
+input OrderUpdateInput {
+  isPaid: Boolean
+  date: DateTime
+  products: [ID!]
+  customer: ID
+}
+
+input ProductInput {
+  name: String!
+  description: String!
+  price: Float!
+  type: ProductType!
+  image: DamImageBlockInput!
+}
+
+input ProductUpdateInput {
+  name: String
+  description: String
+  price: Float
+  type: ProductType
+  image: DamImageBlockInput
+}
+
+input CustomerInput {
+  firstname: String!
+  lastname: String!
+  email: String!
+  address: String!
+}
+
+input CustomerUpdateInput {
+  firstname: String
+  lastname: String
+  email: String
+  address: String
 }
